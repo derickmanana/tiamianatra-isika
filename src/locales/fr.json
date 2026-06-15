@@ -1,0 +1,68 @@
+{
+  "app": { "name": "M'BossTsika", "tagline": "Formations vidéo professionnelles" },
+  "nav": {
+    "home": "Accueil", "formations": "Formations", "my_modules": "Mes Modules",
+    "payments": "Paiements", "notifications": "Notifications", "messages": "Messages",
+    "profile": "Mon Profil", "admin": "Admin", "logout": "Déconnexion", "login": "Connexion", "signup": "Inscription"
+  },
+  "common": {
+    "back": "Retour", "save": "Enregistrer", "cancel": "Annuler", "delete": "Supprimer",
+    "edit": "Modifier", "add": "Ajouter", "loading": "Chargement…", "search": "Rechercher",
+    "submit": "Envoyer", "confirm": "Confirmer", "yes": "Oui", "no": "Non",
+    "ariary": "Ariary", "module": "Module", "modules": "Modules", "videos": "Vidéos",
+    "view": "Voir", "locked": "Verrouillé", "unlocked": "Débloqué", "pending": "En attente",
+    "validated": "Validé", "rejected": "Refusé", "active": "Actif", "inactive": "Inactif",
+    "actions": "Actions", "status": "Statut", "date": "Date", "title": "Titre",
+    "description": "Description", "price": "Prix", "email": "Email", "password": "Mot de passe",
+    "name": "Nom", "phone": "Téléphone"
+  },
+  "auth": {
+    "welcome": "Bienvenue", "login_title": "Connexion à votre compte",
+    "signup_title": "Créer un compte", "no_account": "Pas encore de compte ?",
+    "have_account": "Déjà inscrit ?", "full_name": "Nom complet",
+    "login_button": "Se connecter", "signup_button": "S'inscrire",
+    "forgot_password": "Mot de passe oublié ?", "logged_in": "Connecté avec succès",
+    "logged_out": "Vous êtes déconnecté", "signup_success": "Compte créé avec succès",
+    "blocked": "Votre compte est bloqué. Contactez l'administrateur."
+  },
+  "home": {
+    "hero_title": "Apprenez. Progressez. Réussissez.",
+    "hero_subtitle": "Accédez à des formations vidéo premium et changez votre vie professionnelle.",
+    "explore": "Explorer les formations", "announcements": "Annonces", "featured": "Formations populaires"
+  },
+  "formation": { "modules_count": "{{count}} modules", "view_modules": "Voir les modules" },
+  "module": {
+    "order": "Module {{n}}", "buy_to_unlock": "Acheter pour débloquer",
+    "complete_previous": "Terminez le module précédent pour le débloquer",
+    "videos_count": "{{count}} vidéos", "no_videos": "Aucune vidéo pour le moment.",
+    "unavailable": "Ce module n'est pas encore disponible."
+  },
+  "payment": {
+    "title": "Paiement du module", "amount_ar": "Montant en Ariary",
+    "amount_usdt": "Montant en USDT", "rate": "Taux : 1 USDT = {{rate}} Ariary",
+    "choose_method": "Choisissez une méthode de paiement",
+    "send_to": "Envoyez le montant à :", "holder": "Titulaire",
+    "upload_proof": "Téléverser la capture de paiement (obligatoire)",
+    "accepted_formats": "Formats acceptés : JPG, PNG, JPEG, WEBP",
+    "submit_payment": "Soumettre le paiement", "payment_sent": "Paiement envoyé, en attente de validation.",
+    "history": "Historique des paiements", "no_payments": "Aucun paiement.",
+    "method_mvola": "Mvola", "method_orange_money": "Orange Money", "method_binance": "Binance UID"
+  },
+  "notifications": { "all": "Toutes", "unread": "Non lues", "mark_read": "Marquer comme lu", "empty": "Aucune notification." },
+  "messages": { "from_admin": "Message de l'administrateur", "empty": "Aucun message." },
+  "profile": { "title": "Mon profil", "update_success": "Profil mis à jour" },
+  "admin": {
+    "dashboard": "Tableau de bord", "users": "Utilisateurs", "total_users": "Utilisateurs",
+    "total_formations": "Formations", "total_modules": "Modules", "total_videos": "Vidéos",
+    "pending_payments": "Paiements en attente", "validated_payments": "Paiements validés",
+    "total_revenue": "Revenus totaux", "recent_activity": "Activités récentes",
+    "formations_mgmt": "Gestion des formations", "modules_mgmt": "Gestion des modules",
+    "videos_mgmt": "Gestion des vidéos", "payments_mgmt": "Gestion des paiements",
+    "users_mgmt": "Gestion des utilisateurs", "announcements_mgmt": "Annonces",
+    "messages_mgmt": "Messages", "payment_settings": "Paramètres de paiement",
+    "app_settings": "Paramètres de l'application", "import_playlist": "Importer une playlist YouTube",
+    "playlist_url": "URL de la playlist YouTube", "sync_playlist": "Synchroniser",
+    "validate": "Valider", "reject": "Refuser", "block": "Bloquer", "unblock": "Débloquer",
+    "broadcast_message": "Message à tous les utilisateurs", "usdt_rate": "Taux USDT (Ariary)"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "app": { "name": "M'BossTsika", "tagline": "Professional video courses" },
+  "nav": {
+    "home": "Home", "formations": "Courses", "my_modules": "My Modules",
+    "payments": "Payments", "notifications": "Notifications", "messages": "Messages",
+    "profile": "My Profile", "admin": "Admin", "logout": "Sign out", "login": "Sign in", "signup": "Sign up"
+  },
+  "common": {
+    "back": "Back", "save": "Save", "cancel": "Cancel", "delete": "Delete",
+    "edit": "Edit", "add": "Add", "loading": "Loading…", "search": "Search",
+    "submit": "Submit", "confirm": "Confirm", "yes": "Yes", "no": "No",
+    "ariary": "Ariary", "module": "Module", "modules": "Modules", "videos": "Videos",
+    "view": "View", "locked": "Locked", "unlocked": "Unlocked", "pending": "Pending",
+    "validated": "Validated", "rejected": "Rejected", "active": "Active", "inactive": "Inactive",
+    "actions": "Actions", "status": "Status", "date": "Date", "title": "Title",
+    "description": "Description", "price": "Price", "email": "Email", "password": "Password",
+    "name": "Name", "phone": "Phone"
+  },
+  "auth": {
+    "welcome": "Welcome", "login_title": "Sign in to your account",
+    "signup_title": "Create an account", "no_account": "No account yet?",
+    "have_account": "Already have an account?", "full_name": "Full name",
+    "login_button": "Sign in", "signup_button": "Sign up",
+    "forgot_password": "Forgot password?", "logged_in": "Signed in",
+    "logged_out": "You have been signed out", "signup_success": "Account created",
+    "blocked": "Your account is blocked. Contact the administrator."
+  },
+  "home": {
+    "hero_title": "Learn. Grow. Succeed.",
+    "hero_subtitle": "Access premium video courses and transform your career.",
+    "explore": "Explore courses", "announcements": "Announcements", "featured": "Popular courses"
+  },
+  "formation": { "modules_count": "{{count}} modules", "view_modules": "View modules" },
+  "module": {
+    "order": "Module {{n}}", "buy_to_unlock": "Buy to unlock",
+    "complete_previous": "Complete the previous module to unlock this one",
+    "videos_count": "{{count}} videos", "no_videos": "No videos yet.",
+    "unavailable": "This module is not yet available."
+  },
+  "payment": {
+    "title": "Module payment", "amount_ar": "Amount in Ariary",
+    "amount_usdt": "Amount in USDT", "rate": "Rate: 1 USDT = {{rate}} Ariary",
+    "choose_method": "Choose a payment method",
+    "send_to": "Send the amount to:", "holder": "Account holder",
+    "upload_proof": "Upload payment screenshot (required)",
+    "accepted_formats": "Accepted formats: JPG, PNG, JPEG, WEBP",
+    "submit_payment": "Submit payment", "payment_sent": "Payment sent, awaiting validation.",
+    "history": "Payment history", "no_payments": "No payments.",
+    "method_mvola": "Mvola", "method_orange_money": "Orange Money", "method_binance": "Binance UID"
+  },
+  "notifications": { "all": "All", "unread": "Unread", "mark_read": "Mark as read", "empty": "No notifications." },
+  "messages": { "from_admin": "Message from administrator", "empty": "No messages." },
+  "profile": { "title": "My profile", "update_success": "Profile updated" },
+  "admin": {
+    "dashboard": "Dashboard", "users": "Users", "total_users": "Users",
+    "total_formations": "Courses", "total_modules": "Modules", "total_videos": "Videos",
+    "pending_payments": "Pending payments", "validated_payments": "Validated payments",
+    "total_revenue": "Total revenue", "recent_activity": "Recent activity",
+    "formations_mgmt": "Courses management", "modules_mgmt": "Modules management",
+    "videos_mgmt": "Videos management", "payments_mgmt": "Payments management",
+    "users_mgmt": "Users management", "announcements_mgmt": "Announcements",
+    "messages_mgmt": "Messages", "payment_settings": "Payment settings",
+    "app_settings": "App settings", "import_playlist": "Import YouTube playlist",
+    "playlist_url": "YouTube playlist URL", "sync_playlist": "Sync",
+    "validate": "Validate", "reject": "Reject", "block": "Block", "unblock": "Unblock",
+    "broadcast_message": "Broadcast to all users", "usdt_rate": "USDT rate (Ariary)"
+  }
+}
