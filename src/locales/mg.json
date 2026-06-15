@@ -1,0 +1,68 @@
+{
+  "app": { "name": "M'BossTsika", "tagline": "Fiofanana horonan-tsary matihanina" },
+  "nav": {
+    "home": "Fandraisana", "formations": "Fiofanana", "my_modules": "Modulako",
+    "payments": "Fandoavam-bola", "notifications": "Fampilazana", "messages": "Hafatra",
+    "profile": "Mombamomba ahy", "admin": "Mpitantana", "logout": "Hivoaka", "login": "Hiditra", "signup": "Hisoratra anarana"
+  },
+  "common": {
+    "back": "Hiverina", "save": "Tehirizo", "cancel": "Aoka", "delete": "Fafao",
+    "edit": "Ovay", "add": "Ampio", "loading": "Miandry…", "search": "Hitady",
+    "submit": "Alefa", "confirm": "Hamafiso", "yes": "Eny", "no": "Tsia",
+    "ariary": "Ariary", "module": "Modely", "modules": "Modely", "videos": "Horonan-tsary",
+    "view": "Hijery", "locked": "Mihidy", "unlocked": "Misokatra", "pending": "Miandry",
+    "validated": "Voamarina", "rejected": "Tsy nekena", "active": "Mandeha", "inactive": "Mijanona",
+    "actions": "Asa", "status": "Toetra", "date": "Daty", "title": "Lohateny",
+    "description": "Famaritana", "price": "Vidiny", "email": "Mailaka", "password": "Tenimiafina",
+    "name": "Anarana", "phone": "Telefaona"
+  },
+  "auth": {
+    "welcome": "Tongasoa", "login_title": "Idiro ny kaontinao",
+    "signup_title": "Mamorona kaonty", "no_account": "Tsy mbola manana kaonty?",
+    "have_account": "Efa manana kaonty?", "full_name": "Anarana feno",
+    "login_button": "Hiditra", "signup_button": "Hisoratra anarana",
+    "forgot_password": "Hadinonao ny tenimiafina?", "logged_in": "Tafiditra soa aman-tsara",
+    "logged_out": "Efa nivoaka ianao", "signup_success": "Voaforona ny kaonty",
+    "blocked": "Voasakana ny kaontinao. Mifandraisa amin'ny mpitantana."
+  },
+  "home": {
+    "hero_title": "Mianara. Mandrosoa. Mahomby.",
+    "hero_subtitle": "Mahazo fiofanana horonan-tsary tsara dia ovay ny fiainanao matihanina.",
+    "explore": "Jereo ny fiofanana", "announcements": "Filazana", "featured": "Fiofanana malaza"
+  },
+  "formation": { "modules_count": "{{count}} modely", "view_modules": "Hijery ny modely" },
+  "module": {
+    "order": "Modely {{n}}", "buy_to_unlock": "Vidio mba hisokatra",
+    "complete_previous": "Vitao aloha ny modely teo aloha",
+    "videos_count": "{{count}} horonan-tsary", "no_videos": "Mbola tsy misy horonan-tsary.",
+    "unavailable": "Tsy mbola azo ampiasaina ity modely ity."
+  },
+  "payment": {
+    "title": "Fandoavam-bidin'ny modely", "amount_ar": "Vola Ariary",
+    "amount_usdt": "Vola USDT", "rate": "Tahan'ny vola: 1 USDT = {{rate}} Ariary",
+    "choose_method": "Safidio ny fomba fandoavam-bola",
+    "send_to": "Alefaso amin'ity:", "holder": "Anaran'ny tompon-kaonty",
+    "upload_proof": "Ampidiro ny sary fandoavana (tsy maintsy)",
+    "accepted_formats": "Endrika ekena: JPG, PNG, JPEG, WEBP",
+    "submit_payment": "Alefa ny fandoavana", "payment_sent": "Voalefa ny fandoavam-bola, miandry fanamafisana.",
+    "history": "Tantaran'ny fandoavam-bola", "no_payments": "Tsy misy fandoavam-bola.",
+    "method_mvola": "Mvola", "method_orange_money": "Orange Money", "method_binance": "Binance UID"
+  },
+  "notifications": { "all": "Rehetra", "unread": "Tsy novakiana", "mark_read": "Voavaky", "empty": "Tsy misy fampilazana." },
+  "messages": { "from_admin": "Hafatra avy amin'ny mpitantana", "empty": "Tsy misy hafatra." },
+  "profile": { "title": "Mombamomba ahy", "update_success": "Voaova ny profil" },
+  "admin": {
+    "dashboard": "Solaitra fanaraha-maso", "users": "Mpampiasa", "total_users": "Mpampiasa",
+    "total_formations": "Fiofanana", "total_modules": "Modely", "total_videos": "Horonan-tsary",
+    "pending_payments": "Fandoavana miandry", "validated_payments": "Fandoavana nekena",
+    "total_revenue": "Vola miditra", "recent_activity": "Asa farany",
+    "formations_mgmt": "Fitantanana fiofanana", "modules_mgmt": "Fitantanana modely",
+    "videos_mgmt": "Fitantanana horonan-tsary", "payments_mgmt": "Fitantanana fandoavam-bola",
+    "users_mgmt": "Fitantanana mpampiasa", "announcements_mgmt": "Filazana",
+    "messages_mgmt": "Hafatra", "payment_settings": "Fandrindrana fandoavam-bola",
+    "app_settings": "Fandrindrana ny rindrambaiko", "import_playlist": "Hampiditra playlist YouTube",
+    "playlist_url": "URL playlist YouTube", "sync_playlist": "Tahirizina",
+    "validate": "Ekena", "reject": "Lavina", "block": "Sakana", "unblock": "Avoaka",
+    "broadcast_message": "Hafatra ho an'ny rehetra", "usdt_rate": "Tahan'ny USDT (Ariary)"
+  }
+}
