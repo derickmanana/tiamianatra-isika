@@ -1,75 +1,72 @@
-# M'BossTsika — Plan de construction
+# Plan de finalisation M'BossTsika
 
-Plateforme de vente de formations vidéo (YouTube) avec interfaces client et admin, multilingue (MG / FR / EN), mode clair/sombre, paiements manuels avec preuve.
+Ce chantier est volumineux. Je propose de le découper en phases livrables et de demander votre approbation avant exécution.
 
-## Étapes proposées
+## Phase 1 — Corrections critiques (priorité immédiate)
 
-### Phase 1 — Fondations
-1. Activer **Lovable Cloud** (auth + base de données + storage).
-2. Design system M'BossTsika (couleurs, gradients, dark mode, animations légères, tokens dans `src/styles.css`).
-3. i18n (MG / FR / EN) via `react-i18next` avec sélecteur de langue persistant.
-4. Layout principal : navigation fixe, bouton retour, sélecteur langue, switch thème.
+**1.1 Clé YouTube API + page Paramètres API (admin)**
+- Nouvelle table `api_settings` (key/value) protégée admin only.
+- Modifier `syncPlaylist` : lire la clé d'abord depuis `api_settings`, fallback `process.env.YOUTUBE_API_KEY`.
+- Page `/admin` → onglet "Paramètres API" : champ YouTube API Key (masqué), bouton Tester, bouton Enregistrer.
+- Détection auto de l'ID playlist depuis URL collée (déjà partiellement en place, à fiabiliser : supporter `youtu.be`, `list=PL…`, ID brut).
 
-### Phase 2 — Base de données & sécurité
-Tables : `profiles`, `user_roles` (enum admin/client), `formations`, `modules`, `playlists`, `videos`, `payments`, `unlocked_modules`, `notifications`, `messages`, `announcements`, `payment_methods`, `settings`, `user_activity_logs`.
-- RLS sur toutes les tables, fonction `has_role` security-definer.
-- Trigger auto-création profil au signup.
-- Seed : formations + modules (3 par formation) + méthodes de paiement Mvola/Orange/Binance + taux USDT (4450) + prix (52 500 Ar).
-- Bucket Storage `payment-proofs` (privé) + `formation-covers` (public).
-- **Admin principal** : créé via migration avec `rasolonjatovojeannoel21@gmail.com` + rôle admin (le mot de passe initial sera défini au premier signup via "mot de passe oublié" pour sécurité — voir note ci-dessous).
+**1.2 Validation des paiements (admin)**
+- Onglet "Paiements" admin avec table : utilisateur, formation, module, date, méthode, montant, capture (miniature cliquable → aperçu plein écran modal), statut.
+- Boutons Valider / Refuser (modale motif si refus).
+- Backend déjà en place (`reviewPayment`) — câbler l'UI et corriger la requête (jointures profiles/modules/formations + URL signée pour la capture du bucket privé).
 
-### Phase 3 — Auth
-- Pages `/auth` (login + signup email/password) et `/reset-password`.
-- Route guard `_authenticated` (déjà géré par l'intégration).
-- Profil utilisateur modifiable.
+**1.3 Images par défaut des formations**
+- Générer 6 images (1 par formation) via imagegen, uploader comme assets, seeder `formations.cover_url`.
+- Admin peut remplacer l'image (upload dans bucket public `formation-covers`).
 
-### Phase 4 — Interface Client
-Menu : Accueil · Formations · Mes Modules · Paiements · Notifications · Messages · Profil.
-- Accueil : annonces actives + formations en vedette.
-- Liste formations → détail → modules verrouillés en cascade.
-- Clic module verrouillé → page paiement : affiche méthodes (Mvola/Orange/Binance) + montant Ar + montant USDT calculé, upload capture (JPG/PNG/JPEG/WEBP), soumission → statut "en attente".
-- Module débloqué → lecteur YouTube intégré avec liste vidéos (miniature, titre, durée, ordre).
-- Verrouillage cascade : module N+1 bloqué tant que N non validé.
-- Notifications + Messages + Historique paiements.
+## Phase 2 — Contenu & Tarification
 
-### Phase 5 — Interface Admin
-Menu : Dashboard · Formations · Modules · Vidéos · Paiements · Utilisateurs · Notifications · Messages · Annonces · Paramètres Paiement · Paramètres App.
-- Dashboard : stats (users, formations, modules, vidéos, paiements en attente/validés, revenus total + par formation, activités récentes).
-- CRUD formations / modules / playlists.
-- **Import playlist YouTube** : server function qui appelle l'API YouTube Data v3 (nécessite `YOUTUBE_API_KEY`) → récupère vidéos (titre, miniature, durée ISO 8601, position) → insère dans `videos`. Bouton "resynchroniser".
-- Paiements : liste, zoom capture, valider/refuser + commentaire → déclenche déblocage + notification.
-- Utilisateurs : recherche, profil, bloquer/débloquer/supprimer.
-- Messages : envoi individuel ou broadcast.
-- Annonces : CRUD + activer/désactiver.
-- Paramètres paiement : modifier numéros, titulaire, prix, taux USDT (sans toucher au code).
+**2.1 Titres de modules personnalisables** : CRUD admin (créer/modifier/supprimer titre) — colonne `title` existe déjà sur `modules`, ajouter l'UI.
+**2.2 Prix par module** : la colonne `price_ariary` existe sur `modules`. Migration de seed (52 500 / 75 000 / 100 000), UI admin pour éditer.
+**2.3 Remises utilisateur** : nouvelle table `user_discounts (user_id, percent)`. Appliquée automatiquement au calcul du montant à payer.
 
-### Phase 6 — Finitions
-- Logs d'activité.
-- Sitemap + robots.txt.
-- SEO meta par route.
-- Tests de flux : signup → achat module 1 → validation admin → déblocage → lecture vidéos.
+## Phase 3 — Profil & Gamification
+
+**3.1 Profil enrichi** : ajout colonnes `avatar_url`, affichage email, date d'inscription. Upload photo (bucket `avatars` public). Édition nom/téléphone/photo.
+**3.2 Badges automatiques** : fonction SQL `get_user_badge(user_id)` basée sur le nombre de formations terminées (toutes leurs modules débloqués). Affichage : profil, classement, messages.
+**3.3 Certificats** :
+- Table `certificates (user_id, formation_id, pdf_url, issued_at, signature_url)`.
+- Génération auto côté client (jsPDF) quand le module 3 d'une formation est débloqué, avec logo + nom + formation + date.
+- Admin : upload PDF custom, modifier, supprimer.
+- Client : voir + télécharger.
+
+## Phase 4 — Affiliation
+
+- Table `affiliate_codes (user_id, code unique, expires_at, uses_count)`.
+- Table `affiliate_uses (code_id, used_by, payment_id)`.
+- Génération 1 code par utilisateur (30 jours).
+- À l'utilisation : −5 % au nouvel utilisateur, +10 % crédité au propriétaire (cumulable jusqu'à 100 %), au 10ᵉ usage : 1 module gratuit attribué + reset compteur.
+- Dashboard affiliation : utilisations / gains / modules gratuits gagnés.
+
+## Phase 5 — Refonte design premium
+
+- Palette : Bleu professionnel #1E3A8A + Doré #D4AF37 + Blanc + Noir moderne. Mise à jour `src/styles.css` (tokens, gradients, shadows).
+- Cartes formations modernes (cover image, gradient overlay, badge prix).
+- Dashboard admin avec stats visuelles (recharts) : revenus, paiements en attente, utilisateurs actifs.
+- Animations (framer-motion déjà dispo ? sinon transitions CSS).
+- Progression utilisateur : barre par formation, indicateur modules.
+- Bottom nav mobile redesign, header desktop premium.
 
 ## Détails techniques
 
-**Stack** : TanStack Start (template) + React + Tailwind + Lovable Cloud (Supabase géré). Pas de Vercel — déploiement Lovable.
+- 5 nouvelles migrations (api_settings, user_discounts, certificates, affiliate_codes/uses, colonnes profiles+modules).
+- 2 nouveaux buckets : `formation-covers` (public), `avatars` (public), `certificates` (privé).
+- ~6 server functions admin supplémentaires (saveApiKey, setUserDiscount, generateAffiliateCode, redeemAffiliateCode, uploadCertificate, etc.) toutes protégées via `has_role('admin')`.
+- jsPDF + qrcode pour certificats côté client.
+- recharts pour dashboard admin.
 
-**i18n** : `react-i18next` + `i18next-browser-languagedetector`, fichiers JSON par langue dans `src/locales/`.
+## Estimation
 
-**Lecteur YouTube** : iframe embed standard avec `playlist` param (pas besoin de clé pour lecture).
+Travail très volumineux (~30-40 fichiers modifiés/créés, 5 migrations, génération de 6 images). Je recommande de livrer **Phase 1 d'abord** (vos blocages immédiats : clé YouTube + paiements + images), puis d'enchaîner phase par phase après votre validation de chaque livraison.
 
-**Import playlist** : server function `importPlaylist` utilisant `https://www.googleapis.com/youtube/v3/playlistItems` + `videos?part=contentDetails` pour durée. Requiert secret `YOUTUBE_API_KEY` (à demander après activation Cloud).
+## Question
 
-**Admin initial — note importante** : Supabase Auth ne permet pas d'injecter un hash bcrypt directement dans une migration de façon fiable et sécurisée. Approche : la migration crée le rôle admin pour l'email `rasolonjatovojeannoel21@gmail.com` dès qu'il s'inscrit (trigger sur `auth.users` qui assigne rôle `admin` si email match). L'utilisateur s'inscrit normalement avec le mot de passe `@madaga2100/9991` via la page signup → devient automatiquement admin. C'est plus sûr que d'embarquer le hash en clair.
-
-**Calcul USDT** : `Math.round((prix_ar / taux_usdt) * 100) / 100` affiché à 2 décimales.
-
-**Sécurité** :
-- RLS partout, jamais de rôle sur `profiles`.
-- Server functions pour toute opération admin (valider paiement, importer playlist) protégées par `requireSupabaseAuth` + check `has_role(admin)`.
-- Upload preuves : validation type + taille côté client et serveur.
-
-## Questions avant de démarrer
-
-1. **Clé API YouTube** : pour l'import automatique des playlists, il faut une clé API YouTube Data v3 (gratuite, créée dans Google Cloud Console). Je peux te guider pour l'obtenir au moment voulu. OK ?
-2. **Admin initial** : OK pour l'approche "auto-promote sur signup de l'email cible" décrite ci-dessus ?
-3. **Scope phase 1** : je construis tout d'un coup (gros) ou on démarre par fondations + auth + client browsing, puis paiements, puis admin dans des itérations suivantes ?
+Souhaitez-vous que je :
+- **(A)** Démarre par la **Phase 1 seule** (corrections critiques) et qu'on enchaîne ensuite ?
+- **(B)** Exécute **tout le plan d'un coup** (long, plus de risques d'erreurs à corriger en cascade) ?
+- **(C)** Réordonner / retirer certaines phases ?
