@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { GraduationCap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ClientLayout } from "@/components/ClientLayout";
 import { BackButton } from "@/components/BackButton";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { getFormationCover } from "@/lib/formation-covers";
 
 export const Route = createFileRoute("/_authenticated/formations/")({
   component: FormationsPage,
@@ -27,9 +27,17 @@ function FormationsPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {data?.map((f: any) => (
           <Link key={f.id} to="/formations/$id" params={{ id: f.id }}>
-            <Card className="hover:shadow-elegant transition-shadow h-full cursor-pointer">
-              <div className="aspect-video bg-gradient-primary rounded-t-xl flex items-center justify-center">
-                {f.cover_url ? <img src={f.cover_url} alt={f.title} className="w-full h-full object-cover rounded-t-xl" /> : <GraduationCap className="h-12 w-12 text-white" />}
+            <Card className="overflow-hidden hover:shadow-elegant transition-all hover:-translate-y-1 h-full cursor-pointer group">
+              <div className="aspect-video relative overflow-hidden">
+                <img
+                  src={getFormationCover(f)}
+                  alt={f.title}
+                  loading="lazy"
+                  width={1280}
+                  height={720}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               </div>
               <CardHeader>
                 <CardTitle className="text-base">{f.title}</CardTitle>
