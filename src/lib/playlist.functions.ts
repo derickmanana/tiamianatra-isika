@@ -5,6 +5,21 @@ import { parseISO8601Duration } from "@/lib/youtube";
 
 const YT_BASE = "https://www.googleapis.com/youtube/v3";
 
+function extractPlaylistId(input: string): string | null {
+  const raw = input.trim();
+  // Already an ID?
+  if (/^(PL|UU|FL|LL|RD|OL)[A-Za-z0-9_-]{10,}$/.test(raw)) return raw;
+  try {
+    const u = new URL(raw);
+    const list = u.searchParams.get("list");
+    if (list) return list;
+  } catch {}
+  // Try to find list= in arbitrary string
+  const m = raw.match(/[?&]list=([A-Za-z0-9_-]+)/);
+  if (m) return m[1];
+  return null;
+}
+
 async function fetchAllPlaylistItems(playlistId: string, apiKey: string) {
   const items: Array<{ videoId: string; title: string; thumb: string; position: number }> = [];
   let pageToken: string | undefined;
@@ -54,6 +69,37 @@ async function fetchDurations(videoIds: string[], apiKey: string) {
   return map;
 }
 
+async function getYoutubeApiKey(): Promise<string | null> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin.from("api_settings").select("value").eq("key", "youtube_api_key").maybeSingle();
+  const dbKey = (data?.value ?? "").trim();
+  if (dbKey) return dbKey;
+  const envKey = (process.env.YOUTUBE_API_KEY ?? "").trim();
+  return envKey || null;
+}
+
+export const saveYoutubeApiKey = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { key: string }) => z.object({ key: z.string().max(200) }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (!isAdmin) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("api_settings").upsert({ key: "youtube_api_key", value: data.key.trim(), updated_at: new Date().toISOString() });
+    return { ok: true };
+  });
+
+export const getYoutubeApiKeyMasked = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (!isAdmin) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin.from("api_settings").select("value").eq("key", "youtube_api_key").maybeSingle();
+    const v = data?.value ?? "";
+    return { hasKey: v.length > 0, masked: v ? `${v.slice(0, 4)}…${v.slice(-4)}` : "" };
+  });
+
 export const syncPlaylist = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { moduleId: string; playlistUrl: string }) =>
@@ -66,46 +112,37 @@ export const syncPlaylist = createServerFn({ method: "POST" })
     });
     if (!isAdmin) throw new Error("Forbidden");
 
-    const apiKey = process.env.YOUTUBE_API_KEY;
-    if (!apiKey) throw new Error("YOUTUBE_API_KEY is not configured");
+    const apiKey = await getYoutubeApiKey();
+    if (!apiKey) throw new Error("Clé YouTube API absente. Configurez-la dans l'onglet Paramètres API.");
 
-    // Extract playlist id
-    let playlistId: string | null = null;
-    try {
-      const u = new URL(data.playlistUrl);
-      playlistId = u.searchParams.get("list");
-    } catch {
-      playlistId = data.playlistUrl;
-    }
-    if (!playlistId) throw new Error("Invalid playlist URL");
+    const playlistId = extractPlaylistId(data.playlistUrl);
+    if (!playlistId) throw new Error("URL de playlist YouTube invalide.");
 
     const items = await fetchAllPlaylistItems(playlistId, apiKey);
+    if (items.length === 0) throw new Error("Aucune vidéo trouvée dans la playlist.");
     const durations = await fetchDurations(items.map((i) => i.videoId), apiKey);
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    // Upsert playlist row
-    const { data: pl, error: plErr } = await supabaseAdmin
-      .from("playlists")
-      .upsert(
-        { module_id: data.moduleId, youtube_playlist_id: playlistId, youtube_url: data.playlistUrl, last_synced_at: new Date().toISOString() },
-        { onConflict: "module_id" as never },
-      )
-      .select()
-      .single();
-    if (plErr) {
-      // Fall back to insert/update manually
-      const { data: existing } = await supabaseAdmin.from("playlists").select("id").eq("module_id", data.moduleId).maybeSingle();
-      if (existing) {
-        await supabaseAdmin.from("playlists").update({ youtube_playlist_id: playlistId, youtube_url: data.playlistUrl, last_synced_at: new Date().toISOString() }).eq("id", existing.id);
-      } else {
-        await supabaseAdmin.from("playlists").insert({ module_id: data.moduleId, youtube_playlist_id: playlistId, youtube_url: data.playlistUrl, last_synced_at: new Date().toISOString() });
-      }
+    const { data: existing } = await supabaseAdmin.from("playlists").select("id").eq("module_id", data.moduleId).maybeSingle();
+    let playlistRowId: string;
+    if (existing) {
+      await supabaseAdmin.from("playlists").update({
+        youtube_playlist_id: playlistId,
+        youtube_url: data.playlistUrl,
+        last_synced_at: new Date().toISOString(),
+      }).eq("id", existing.id);
+      playlistRowId = existing.id;
+    } else {
+      const { data: ins } = await supabaseAdmin.from("playlists").insert({
+        module_id: data.moduleId,
+        youtube_playlist_id: playlistId,
+        youtube_url: data.playlistUrl,
+        last_synced_at: new Date().toISOString(),
+      }).select("id").single();
+      playlistRowId = ins!.id;
     }
-    const { data: plRow } = await supabaseAdmin.from("playlists").select("id").eq("module_id", data.moduleId).maybeSingle();
-    const playlistRowId = pl?.id ?? plRow?.id;
 
-    // Clear previous videos for module then insert
     await supabaseAdmin.from("videos").delete().eq("module_id", data.moduleId);
     const rows = items.map((it) => ({
       module_id: data.moduleId,
