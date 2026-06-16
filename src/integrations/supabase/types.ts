@@ -41,6 +41,24 @@ export type Database = {
         }
         Relationships: []
       }
+      api_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       formations: {
         Row: {
           cover_url: string | null
