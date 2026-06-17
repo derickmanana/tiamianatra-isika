@@ -61,12 +61,12 @@ function Affiliation() {
   });
 
   const generate = useMutation({
-    mutationFn: () => create({ data: undefined as never }),
+    mutationFn: async () => create(),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["aff_code"] });
       toast.success(t("affiliate.generated"));
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const expired = code && new Date(code.expires_at) < new Date();
