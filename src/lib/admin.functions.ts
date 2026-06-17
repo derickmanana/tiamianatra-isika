@@ -48,6 +48,39 @@ export const reviewPayment = createServerFn({ method: "POST" })
         title: "Paiement validé",
         message: "Votre paiement a été validé. Le module est maintenant accessible.",
       });
+
+      // Auto-issue certificate if all modules of the formation are now unlocked
+      const { data: mod } = await supabaseAdmin
+        .from("modules")
+        .select("formation_id")
+        .eq("id", payment.module_id)
+        .single();
+      if (mod?.formation_id) {
+        const { data: allMods } = await supabaseAdmin
+          .from("modules")
+          .select("id")
+          .eq("formation_id", mod.formation_id);
+        const { data: userUnlocks } = await supabaseAdmin
+          .from("unlocked_modules")
+          .select("module_id")
+          .eq("user_id", payment.user_id);
+        const unlockedIds = new Set((userUnlocks ?? []).map((u) => u.module_id));
+        const allDone = (allMods ?? []).length > 0 && allMods!.every((m) => unlockedIds.has(m.id));
+        if (allDone) {
+          await supabaseAdmin
+            .from("certificates")
+            .upsert(
+              { user_id: payment.user_id, formation_id: mod.formation_id },
+              { onConflict: "user_id,formation_id", ignoreDuplicates: true },
+            );
+          await supabaseAdmin.from("notifications").insert({
+            user_id: payment.user_id,
+            type: "general",
+            title: "Certificat débloqué 🏆",
+            message: "Vous avez terminé tous les modules ! Téléchargez votre certificat depuis votre profil.",
+          });
+        }
+      }
     } else {
       await supabaseAdmin.from("notifications").insert({
         user_id: payment.user_id,

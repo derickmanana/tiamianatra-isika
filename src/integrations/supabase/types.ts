@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string
+          id: string
+          total_uses_count: number
+          user_id: string
+          uses_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          total_uses_count?: number
+          user_id: string
+          uses_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          total_uses_count?: number
+          user_id?: string
+          uses_count?: number
+        }
+        Relationships: []
+      }
+      affiliate_uses: {
+        Row: {
+          code_id: string
+          created_at: string
+          id: string
+          payment_id: string | null
+          used_by: string
+        }
+        Insert: {
+          code_id: string
+          created_at?: string
+          id?: string
+          payment_id?: string | null
+          used_by: string
+        }
+        Update: {
+          code_id?: string
+          created_at?: string
+          id?: string
+          payment_id?: string | null
+          used_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_uses_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_uses_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       announcements: {
         Row: {
           body: string
@@ -58,6 +127,44 @@ export type Database = {
           value?: string
         }
         Relationships: []
+      }
+      certificates: {
+        Row: {
+          created_at: string
+          formation_id: string
+          id: string
+          issued_at: string
+          pdf_url: string | null
+          signature_url: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          formation_id: string
+          id?: string
+          issued_at?: string
+          pdf_url?: string | null
+          signature_url?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          formation_id?: string
+          id?: string
+          issued_at?: string
+          pdf_url?: string | null
+          signature_url?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificates_formation_id_fkey"
+            columns: ["formation_id"]
+            isOneToOne: false
+            referencedRelation: "formations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       formations: {
         Row: {
@@ -319,9 +426,11 @@ export type Database = {
       }
       profiles: {
         Row: {
+          affiliate_bonus_percent: number
           avatar_url: string | null
           created_at: string
           email: string
+          free_modules_credit: number
           full_name: string | null
           id: string
           is_blocked: boolean
@@ -329,9 +438,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          affiliate_bonus_percent?: number
           avatar_url?: string | null
           created_at?: string
           email: string
+          free_modules_credit?: number
           full_name?: string | null
           id: string
           is_blocked?: boolean
@@ -339,9 +450,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          affiliate_bonus_percent?: number
           avatar_url?: string | null
           created_at?: string
           email?: string
+          free_modules_credit?: number
           full_name?: string | null
           id?: string
           is_blocked?: boolean
@@ -431,6 +544,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_discounts: {
+        Row: {
+          created_at: string
+          id: string
+          percent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          percent?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          percent?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -508,6 +645,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_badge: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

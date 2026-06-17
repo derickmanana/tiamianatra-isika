@@ -3,7 +3,8 @@
   "nav": {
     "home": "Home", "formations": "Courses", "my_modules": "My Modules",
     "payments": "Payments", "notifications": "Notifications", "messages": "Messages",
-    "profile": "My Profile", "admin": "Admin", "logout": "Sign out", "login": "Sign in", "signup": "Sign up"
+    "profile": "Profile", "affiliation": "Referral",
+    "admin": "Admin", "logout": "Sign out", "login": "Sign in", "signup": "Sign up"
   },
   "common": {
     "back": "Back", "save": "Save", "cancel": "Cancel", "delete": "Delete",
@@ -50,7 +51,32 @@
   },
   "notifications": { "all": "All", "unread": "Unread", "mark_read": "Mark as read", "empty": "No notifications." },
   "messages": { "from_admin": "Message from administrator", "empty": "No messages." },
-  "profile": { "title": "My profile", "update_success": "Profile updated" },
+  "profile": {
+    "title": "My profile", "update_success": "Profile updated",
+    "avatar_updated": "Profile photo updated",
+    "certificates": "My certificates", "no_certificates": "No certificates yet. Complete all modules of a course to earn one."
+  },
+  "affiliate": {
+    "title": "Referral program",
+    "subtitle": "Share your code, earn bonuses and unlock free modules.",
+    "your_code": "Your referral code",
+    "generate": "Generate my code",
+    "generated": "Code generated",
+    "copy": "Copy", "copied": "Code copied",
+    "expires_in": "Expires in {{days}} days",
+    "expired_msg": "Your code has expired. Generate a new one (valid 30 days).",
+    "none_yet": "You don't have a referral code yet.",
+    "total_uses": "Successful referrals", "bonus": "Accumulated bonus",
+    "free_modules": "Free modules earned",
+    "rule_discount": "−5% for the person using your code",
+    "rule_bonus": "+10% bonus credited on your next payments (stackable up to 100%)",
+    "rule_free": "On the 10th referral: 1 free module unlocked",
+    "recent_uses": "Recent uses", "no_uses": "No uses yet.",
+    "use_n": "Use #{{n}}",
+    "have_code": "I have a referral code", "code_placeholder": "Enter code",
+    "apply": "Apply", "applied": "Code applied: −5%",
+    "invalid": "Invalid code"
+  },
   "admin": {
     "dashboard": "Dashboard", "users": "Users", "total_users": "Users",
     "total_formations": "Courses", "total_modules": "Modules", "total_videos": "Videos",

@@ -3,7 +3,8 @@
   "nav": {
     "home": "Accueil", "formations": "Formations", "my_modules": "Mes Modules",
     "payments": "Paiements", "notifications": "Notifications", "messages": "Messages",
-    "profile": "Mon Profil", "admin": "Admin", "logout": "Déconnexion", "login": "Connexion", "signup": "Inscription"
+    "profile": "Profil", "affiliation": "Parrainage",
+    "admin": "Admin", "logout": "Déconnexion", "login": "Connexion", "signup": "Inscription"
   },
   "common": {
     "back": "Retour", "save": "Enregistrer", "cancel": "Annuler", "delete": "Supprimer",
@@ -50,7 +51,32 @@
   },
   "notifications": { "all": "Toutes", "unread": "Non lues", "mark_read": "Marquer comme lu", "empty": "Aucune notification." },
   "messages": { "from_admin": "Message de l'administrateur", "empty": "Aucun message." },
-  "profile": { "title": "Mon profil", "update_success": "Profil mis à jour" },
+  "profile": {
+    "title": "Mon profil", "update_success": "Profil mis à jour",
+    "avatar_updated": "Photo de profil mise à jour",
+    "certificates": "Mes certificats", "no_certificates": "Aucun certificat pour le moment. Terminez tous les modules d'une formation pour en obtenir un."
+  },
+  "affiliate": {
+    "title": "Programme de parrainage",
+    "subtitle": "Partagez votre code, gagnez des bonus et débloquez des modules gratuits.",
+    "your_code": "Votre code de parrainage",
+    "generate": "Générer mon code",
+    "generated": "Code généré avec succès",
+    "copy": "Copier", "copied": "Code copié",
+    "expires_in": "Expire dans {{days}} jours",
+    "expired_msg": "Votre code a expiré. Générez-en un nouveau (valide 30 jours).",
+    "none_yet": "Vous n'avez pas encore de code de parrainage.",
+    "total_uses": "Parrainages réussis", "bonus": "Bonus cumulé",
+    "free_modules": "Modules gratuits gagnés",
+    "rule_discount": "−5 % pour la personne qui utilise votre code",
+    "rule_bonus": "+10 % de bonus crédité sur vos prochains paiements (cumulable jusqu'à 100 %)",
+    "rule_free": "Au 10ᵉ parrainage : 1 module gratuit débloqué",
+    "recent_uses": "Utilisations récentes", "no_uses": "Aucune utilisation pour le moment.",
+    "use_n": "Utilisation #{{n}}",
+    "have_code": "J'ai un code de parrainage", "code_placeholder": "Saisir le code",
+    "apply": "Appliquer", "applied": "Code appliqué : −5 %",
+    "invalid": "Code invalide"
+  },
   "admin": {
     "dashboard": "Tableau de bord", "users": "Utilisateurs", "total_users": "Utilisateurs",
     "total_formations": "Formations", "total_modules": "Modules", "total_videos": "Vidéos",

@@ -81,11 +81,17 @@ function HomePage() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {formations?.map((f) => (
             <Link key={f.id} to="/formations/$id" params={{ id: f.id }}>
-              <Card className="hover:shadow-elegant transition-shadow cursor-pointer h-full">
-                <div className="aspect-video bg-gradient-primary rounded-t-xl flex items-center justify-center">
-                  <GraduationCap className="h-12 w-12 text-white" />
+              <Card className="hover:shadow-elegant hover:-translate-y-1 transition-all cursor-pointer h-full overflow-hidden border-gold/20">
+                <div className="aspect-video bg-gradient-hero relative flex items-center justify-center">
+                  <GraduationCap className="h-14 w-14 text-white/90 drop-shadow-lg" />
+                  <div className="absolute top-2 right-2 bg-gold text-gold-foreground text-[10px] font-bold px-2 py-1 rounded-full shadow">
+                    PREMIUM
+                  </div>
                 </div>
-                <CardHeader><CardTitle className="text-base">{f.title}</CardTitle><CardDescription className="line-clamp-2">{f.description}</CardDescription></CardHeader>
+                <CardHeader>
+                  <CardTitle className="text-base">{f.title}</CardTitle>
+                  <CardDescription className="line-clamp-2">{f.description}</CardDescription>
+                </CardHeader>
               </Card>
             </Link>
           ))}
