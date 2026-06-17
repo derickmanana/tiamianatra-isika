@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import {
-  Home, GraduationCap, Layers, Wallet, Bell, MessageSquare, User, LogOut, Shield,
+  Home, GraduationCap, Layers, Wallet, Bell, MessageSquare, User, LogOut, Shield, Sparkles,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,10 +21,15 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     { to: "/formations", label: t("nav.formations"), icon: GraduationCap },
     { to: "/mes-modules", label: t("nav.my_modules"), icon: Layers },
     { to: "/paiements", label: t("nav.payments"), icon: Wallet },
+    { to: "/affiliation", label: t("nav.affiliation"), icon: Sparkles },
     { to: "/notifications", label: t("nav.notifications"), icon: Bell },
     { to: "/messages", label: t("nav.messages"), icon: MessageSquare },
     { to: "/profil", label: t("nav.profile"), icon: User },
   ];
+
+  const mobileItems = items.filter((i) =>
+    ["/", "/formations", "/mes-modules", "/affiliation", "/profil"].includes(i.to),
+  );
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -37,7 +42,8 @@ export function ClientLayout({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 border-b backdrop-blur bg-background/80">
         <div className="container mx-auto flex items-center justify-between px-4 h-14">
           <Link to="/" className="flex items-center gap-2 font-bold text-lg">
-            <span className="bg-gradient-primary bg-clip-text text-transparent">M'BossTsika</span>
+            <span className="h-7 w-7 rounded-lg bg-gradient-primary grid place-items-center text-primary-foreground text-sm shadow-elegant">M</span>
+            <span className="bg-gradient-to-r from-primary to-gold bg-clip-text text-transparent">M'BossTsika</span>
           </Link>
           <nav className="hidden lg:flex items-center gap-1">
             {items.map((it) => {
@@ -55,8 +61,8 @@ export function ClientLayout({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-1">
             {isAdmin && (
               <Link to="/admin">
-                <Button variant="outline" size="sm" className="gap-1.5">
-                  <Shield className="h-4 w-4" /> <span className="hidden sm:inline">{t("nav.admin")}</span>
+                <Button variant="outline" size="sm" className="gap-1.5 border-gold/50">
+                  <Shield className="h-4 w-4 text-gold" /> <span className="hidden sm:inline">{t("nav.admin")}</span>
                 </Button>
               </Link>
             )}
@@ -71,18 +77,19 @@ export function ClientLayout({ children }: { children: ReactNode }) {
 
       <main className="flex-1 container mx-auto px-4 py-6 pb-24 lg:pb-6">{children}</main>
 
-      {/* Mobile bottom nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur">
-        <div className="grid grid-cols-7">
-          {items.map((it) => {
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur shadow-elegant">
+        <div className="grid grid-cols-5">
+          {mobileItems.map((it) => {
             const Icon = it.icon;
             const active = it.to === "/" ? pathname === "/" : pathname.startsWith(it.to);
             return (
               <Link key={it.to} to={it.to}
-                className={`flex flex-col items-center justify-center py-2 text-[10px] gap-0.5 ${
+                className={`flex flex-col items-center justify-center py-2 text-[10px] gap-0.5 transition-colors ${
                   active ? "text-primary" : "text-muted-foreground"
                 }`}>
-                <Icon className="h-4 w-4" />
+                <div className={`p-1.5 rounded-lg transition ${active ? "bg-primary/10" : ""}`}>
+                  <Icon className="h-4 w-4" />
+                </div>
                 <span className="truncate max-w-full px-1">{it.label}</span>
               </Link>
             );
