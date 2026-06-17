@@ -85,7 +85,6 @@ export const redeemAffiliateCode = createServerFn({ method: "POST" })
       payment_id: data.paymentId,
     });
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const newUses = codeRow.uses_count + 1;
     const newTotal = codeRow.total_uses_count + 1;
     const giveFree = newUses >= 10;
