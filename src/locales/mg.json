@@ -3,7 +3,8 @@
   "nav": {
     "home": "Fandraisana", "formations": "Fiofanana", "my_modules": "Modulako",
     "payments": "Fandoavam-bola", "notifications": "Fampilazana", "messages": "Hafatra",
-    "profile": "Mombamomba ahy", "admin": "Mpitantana", "logout": "Hivoaka", "login": "Hiditra", "signup": "Hisoratra anarana"
+    "profile": "Profil", "affiliation": "Fanentanana",
+    "admin": "Mpitantana", "logout": "Hivoaka", "login": "Hiditra", "signup": "Hisoratra anarana"
   },
   "common": {
     "back": "Hiverina", "save": "Tehirizo", "cancel": "Aoka", "delete": "Fafao",
@@ -50,7 +51,31 @@
   },
   "notifications": { "all": "Rehetra", "unread": "Tsy novakiana", "mark_read": "Voavaky", "empty": "Tsy misy fampilazana." },
   "messages": { "from_admin": "Hafatra avy amin'ny mpitantana", "empty": "Tsy misy hafatra." },
-  "profile": { "title": "Mombamomba ahy", "update_success": "Voaova ny profil" },
+  "profile": {
+    "title": "Mombamomba ahy", "update_success": "Voaova ny profil",
+    "avatar_updated": "Sary voaova",
+    "certificates": "Ny mari-pankasitrahako", "no_certificates": "Mbola tsy misy mari-pankasitrahana. Vitao ny modely rehetra."
+  },
+  "affiliate": {
+    "title": "Programa fanentanana",
+    "subtitle": "Zarao ny kaodinao, ahazoana tombony sy modely maimaim-poana.",
+    "your_code": "Ny kaody fanentanana",
+    "generate": "Mamorona kaody", "generated": "Voaforona ny kaody",
+    "copy": "Adikao", "copied": "Voaadika",
+    "expires_in": "Mifarana afaka {{days}} andro",
+    "expired_msg": "Lany andro ny kaody. Mamorona vaovao.",
+    "none_yet": "Mbola tsy manana kaody ianao.",
+    "total_uses": "Mpampiasa", "bonus": "Tombony tafaangona",
+    "free_modules": "Modely maimaim-poana azo",
+    "rule_discount": "−5 % ho an'izay mampiasa ny kaodinao",
+    "rule_bonus": "+10 % tombony amin'ny fandoavam-bolanao manaraka",
+    "rule_free": "Amin'ny fanentanana faha-10 : modely iray maimaim-poana",
+    "recent_uses": "Fampiasana vao tato", "no_uses": "Tsy mbola misy fampiasana.",
+    "use_n": "Fampiasana #{{n}}",
+    "have_code": "Manana kaody fanentanana aho", "code_placeholder": "Soraty ny kaody",
+    "apply": "Ampiharo", "applied": "Voa-ampihatra : −5 %",
+    "invalid": "Tsy mety ny kaody"
+  },
   "admin": {
     "dashboard": "Solaitra fanaraha-maso", "users": "Mpampiasa", "total_users": "Mpampiasa",
     "total_formations": "Fiofanana", "total_modules": "Modely", "total_videos": "Horonan-tsary",
