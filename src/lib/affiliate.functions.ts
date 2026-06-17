@@ -47,9 +47,10 @@ export const validateAffiliateCode = createServerFn({ method: "POST" })
     z.object({ code: z.string().trim().min(4).max(16) }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+    const { userId } = context;
     const code = data.code.toUpperCase();
-    const { data: row } = await supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row } = await supabaseAdmin
       .from("affiliate_codes")
       .select("*")
       .eq("code", code)
@@ -66,9 +67,10 @@ export const redeemAffiliateCode = createServerFn({ method: "POST" })
     z.object({ code: z.string().trim().min(4).max(16), paymentId: z.string().uuid() }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+    const { userId } = context;
     const code = data.code.toUpperCase();
-    const { data: codeRow } = await supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: codeRow } = await supabaseAdmin
       .from("affiliate_codes")
       .select("*")
       .eq("code", code)
@@ -77,7 +79,7 @@ export const redeemAffiliateCode = createServerFn({ method: "POST" })
     if (codeRow.user_id === userId) throw new Error("Code personnel");
     if (new Date(codeRow.expires_at) < new Date()) throw new Error("Code expiré");
 
-    await supabase.from("affiliate_uses").insert({
+    await supabaseAdmin.from("affiliate_uses").insert({
       code_id: codeRow.id,
       used_by: userId,
       payment_id: data.paymentId,
