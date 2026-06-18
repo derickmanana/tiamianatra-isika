@@ -205,7 +205,7 @@ function ModuleDetail() {
     await supabase.from("notifications").insert({
       user_id: user.id,
       title: "Preuve de paiement reçue",
-      body: "Votre preuve de paiement a bien été reçue. Notre équipe est en cours de vérification.",
+      message: "Votre preuve de paiement a bien été reçue. Notre équipe est en cours de vérification.",
       type: "general",
     });
 
