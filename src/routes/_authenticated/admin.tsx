@@ -42,6 +42,7 @@ function AdminPage() {
           <TabsTrigger value="messages">{t("admin.messages_mgmt")}</TabsTrigger>
           <TabsTrigger value="settings">{t("admin.payment_settings")}</TabsTrigger>
           <TabsTrigger value="api">Paramètres API</TabsTrigger>
+          <TabsTrigger value="email">Paramètres Email</TabsTrigger>
         </TabsList>
         <TabsContent value="dashboard"><DashboardTab /></TabsContent>
         <TabsContent value="payments"><PaymentsTab /></TabsContent>
