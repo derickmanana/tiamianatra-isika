@@ -52,6 +52,7 @@ function AdminPage() {
         <TabsContent value="messages"><MessagesTab /></TabsContent>
         <TabsContent value="settings"><SettingsTab /></TabsContent>
         <TabsContent value="api"><ApiSettingsTab /></TabsContent>
+        <TabsContent value="email"><EmailSettingsTab /></TabsContent>
       </Tabs>
     </ClientLayout>
   );
