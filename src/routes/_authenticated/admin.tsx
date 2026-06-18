@@ -16,6 +16,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { reviewPayment, toggleUserBlock, broadcastMessage } from "@/lib/admin.functions";
+import { CoverUploader } from "@/components/CoverUploader";
 import { syncPlaylist, saveYoutubeApiKey, getYoutubeApiKeyMasked } from "@/lib/playlist.functions";
 import { toast } from "sonner";
 
@@ -243,12 +244,9 @@ function ModulesTab() {
         <Card key={f.id}>
           <CardHeader>
             <CardTitle className="text-base">{f.title}</CardTitle>
-            <div className="flex gap-2 mt-2">
-              <Input
-                placeholder="URL image de couverture personnalisée (vide = défaut)"
-                defaultValue={f.cover_url ?? ""}
-                onBlur={(e) => { if ((e.target.value ?? "") !== (f.cover_url ?? "")) saveFormationCover(f.id, e.target.value); }}
-              />
+            <div className="mt-3">
+              <Label className="text-xs mb-1 block">Image de couverture</Label>
+              <CoverUploader formation={f} onSaved={() => qc.invalidateQueries({ queryKey: ["admin-formations"] })} />
             </div>
           </CardHeader>
           <CardContent className="space-y-2">

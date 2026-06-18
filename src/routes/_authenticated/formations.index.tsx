@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ClientLayout } from "@/components/ClientLayout";
 import { BackButton } from "@/components/BackButton";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { getFormationCover } from "@/lib/formation-covers";
+import { CoverImage } from "@/components/CoverImage";
 
 export const Route = createFileRoute("/_authenticated/formations/")({
   component: FormationsPage,
@@ -29,14 +29,7 @@ function FormationsPage() {
           <Link key={f.id} to="/formations/$id" params={{ id: f.id }}>
             <Card className="overflow-hidden hover:shadow-elegant transition-all hover:-translate-y-1 h-full cursor-pointer group">
               <div className="aspect-video relative overflow-hidden">
-                <img
-                  src={getFormationCover(f)}
-                  alt={f.title}
-                  loading="lazy"
-                  width={1280}
-                  height={720}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                <CoverImage formation={f} alt={f.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               </div>
               <CardHeader>
