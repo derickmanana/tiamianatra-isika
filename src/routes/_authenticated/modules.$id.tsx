@@ -201,6 +201,14 @@ function ModuleDetail() {
       }
     }
 
+    // Notification: preuve de paiement envoyée
+    await supabase.from("notifications").insert({
+      user_id: user.id,
+      title: "Preuve de paiement reçue",
+      message: "Votre preuve de paiement a bien été reçue. Notre équipe est en cours de vérification.",
+      type: "general",
+    });
+
     setSubmitting(false);
     toast.success(t("payment.payment_sent"));
     setFile(null);

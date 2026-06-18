@@ -42,6 +42,7 @@ function AdminPage() {
           <TabsTrigger value="messages">{t("admin.messages_mgmt")}</TabsTrigger>
           <TabsTrigger value="settings">{t("admin.payment_settings")}</TabsTrigger>
           <TabsTrigger value="api">Paramètres API</TabsTrigger>
+          <TabsTrigger value="email">Paramètres Email</TabsTrigger>
         </TabsList>
         <TabsContent value="dashboard"><DashboardTab /></TabsContent>
         <TabsContent value="payments"><PaymentsTab /></TabsContent>
@@ -51,6 +52,7 @@ function AdminPage() {
         <TabsContent value="messages"><MessagesTab /></TabsContent>
         <TabsContent value="settings"><SettingsTab /></TabsContent>
         <TabsContent value="api"><ApiSettingsTab /></TabsContent>
+        <TabsContent value="email"><EmailSettingsTab /></TabsContent>
       </Tabs>
     </ClientLayout>
   );
@@ -422,6 +424,43 @@ function ApiSettingsTab() {
             <Button onClick={onSave} disabled={!key.trim()}>Enregistrer</Button>
           </div>
           <p className="text-xs text-muted-foreground">La clé est stockée côté serveur et utilisée automatiquement à chaque synchronisation de playlist.</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function EmailSettingsTab() {
+  const sender = "kraro.store.madagascar@gmail.com";
+  return (
+    <div className="mt-4 space-y-4">
+      <Card>
+        <CardHeader><CardTitle className="text-base">Adresse de réponse</CardTitle></CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          <p>Nom expéditeur affiché : <strong>M'BossTsika</strong></p>
+          <p>Adresse Reply-To : <code className="bg-muted px-1.5 py-0.5 rounded">{sender}</code></p>
+          <p className="text-muted-foreground text-xs">Les réponses des utilisateurs arriveront sur cette boîte Gmail.</p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader><CardTitle className="text-base">Domaine d'envoi</CardTitle></CardHeader>
+        <CardContent className="space-y-3 text-sm">
+          <p>L'envoi d'emails professionnels (bienvenue, paiements, certificats) nécessite un domaine vérifié — Gmail ne peut pas être utilisé comme expéditeur SMTP officiel.</p>
+          <p className="text-muted-foreground">Une fois le domaine configuré, les emails partiront automatiquement depuis <strong>notify.votredomaine.com</strong> au nom de <strong>M'BossTsika</strong>, avec Reply-To vers votre Gmail.</p>
+          <p className="text-xs text-muted-foreground">Cette configuration se fait depuis l'interface Lovable Cloud → Emails.</p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader><CardTitle className="text-base">Emails automatiques prévus</CardTitle></CardHeader>
+        <CardContent className="text-sm">
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Bienvenue / confirmation d'inscription</li>
+            <li>Preuve de paiement reçue</li>
+            <li>Paiement validé ✅</li>
+            <li>Paiement refusé ❌ (avec motif)</li>
+            <li>Certificat disponible 🏆</li>
+          </ul>
+          <p className="text-xs text-muted-foreground mt-3">Les notifications in-app pour ces événements sont déjà actives.</p>
         </CardContent>
       </Card>
     </div>
