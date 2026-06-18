@@ -206,7 +206,7 @@ function ModuleDetail() {
       user_id: user.id,
       title: "Preuve de paiement reçue",
       body: "Votre preuve de paiement a bien été reçue. Notre équipe est en cours de vérification.",
-      type: "payment_sent",
+      type: "general",
     });
 
     setSubmitting(false);
