@@ -231,12 +231,8 @@ function ModulesTab() {
     qc.invalidateQueries({ queryKey: ["admin-formations"] });
   };
 
-  const saveFormationCover = async (id: string, cover_url: string) => {
-    const { error } = await supabase.from("formations").update({ cover_url }).eq("id", id);
-    if (error) return toast.error(error.message);
-    toast.success("Image mise à jour");
-    qc.invalidateQueries({ queryKey: ["admin-formations"] });
-  };
+
+
 
   return (
     <div className="grid gap-3 mt-4">
