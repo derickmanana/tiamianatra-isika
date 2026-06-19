@@ -1,72 +1,69 @@
-# Plan de finalisation M'BossTsika
+# Refonte complète Accueil M'BossTsika — Plan
 
-Ce chantier est volumineux. Je propose de le découper en phases livrables et de demander votre approbation avant exécution.
+Cette refonte touche la base de données, l'admin, et l'accueil client. Vu l'ampleur, je propose de découper en **3 phases livrables** plutôt qu'un seul mega-commit (risqué et difficile à valider).
 
-## Phase 1 — Corrections critiques (priorité immédiate)
+---
 
-**1.1 Clé YouTube API + page Paramètres API (admin)**
-- Nouvelle table `api_settings` (key/value) protégée admin only.
-- Modifier `syncPlaylist` : lire la clé d'abord depuis `api_settings`, fallback `process.env.YOUTUBE_API_KEY`.
-- Page `/admin` → onglet "Paramètres API" : champ YouTube API Key (masqué), bouton Tester, bouton Enregistrer.
-- Détection auto de l'ID playlist depuis URL collée (déjà partiellement en place, à fiabiliser : supporter `youtu.be`, `list=PL…`, ID brut).
+## Phase 1 — Fondations base de données & couvertures vidéo
 
-**1.2 Validation des paiements (admin)**
-- Onglet "Paiements" admin avec table : utilisateur, formation, module, date, méthode, montant, capture (miniature cliquable → aperçu plein écran modal), statut.
-- Boutons Valider / Refuser (modale motif si refus).
-- Backend déjà en place (`reviewPayment`) — câbler l'UI et corriger la requête (jointures profiles/modules/formations + URL signée pour la capture du bucket privé).
+### Nouvelles tables
+- `hero_slides` : type (text|image|video), title, body, media_url (image storage path), youtube_url, display_order, is_active
+- `schools` : name, logo_url, description, country, display_order, is_active
+- `learning_tracks` (types d'apprentissage) : code (`tsotra`|`certificat`|`diplome_equiv`|`diplome`), label, description, price_multiplier, is_active
+- `course_durations` : name (Normal/Accéléré/Journée/Soir/Weekend), description, duration_weeks, price_multiplier, is_active
+- `formation_enrollments` : user_id, formation_id, school_id, track_id, duration_id, status — trace le parcours utilisateur
 
-**1.3 Images par défaut des formations**
-- Générer 6 images (1 par formation) via imagegen, uploader comme assets, seeder `formations.cover_url`.
-- Admin peut remplacer l'image (upload dans bucket public `formation-covers`).
+### Modifs colonnes
+- `formations` : ajouter `cover_type` ('image'|'video'), `youtube_url`, `price`, `level` (debutant|intermediaire|avance)
+- Bucket `hero-media` (privé) pour images d'annonces
 
-## Phase 2 — Contenu & Tarification
+### Grants + RLS (admin write, authenticated read sur tables référentielles)
 
-**2.1 Titres de modules personnalisables** : CRUD admin (créer/modifier/supprimer titre) — colonne `title` existe déjà sur `modules`, ajouter l'UI.
-**2.2 Prix par module** : la colonne `price_ariary` existe sur `modules`. Migration de seed (52 500 / 75 000 / 100 000), UI admin pour éditer.
-**2.3 Remises utilisateur** : nouvelle table `user_discounts (user_id, percent)`. Appliquée automatiquement au calcul du montant à payer.
+---
 
-## Phase 3 — Profil & Gamification
+## Phase 2 — Interface Admin
 
-**3.1 Profil enrichi** : ajout colonnes `avatar_url`, affichage email, date d'inscription. Upload photo (bucket `avatars` public). Édition nom/téléphone/photo.
-**3.2 Badges automatiques** : fonction SQL `get_user_badge(user_id)` basée sur le nombre de formations terminées (toutes leurs modules débloqués). Affichage : profil, classement, messages.
-**3.3 Certificats** :
-- Table `certificates (user_id, formation_id, pdf_url, issued_at, signature_url)`.
-- Génération auto côté client (jsPDF) quand le module 3 d'une formation est débloqué, avec logo + nom + formation + date.
-- Admin : upload PDF custom, modifier, supprimer.
-- Client : voir + télécharger.
+Onglets ajoutés dans `/admin` :
+- **Annonces Slider** : CRUD hero_slides + uploader image + champ YouTube + toggle actif + ordre
+- **Écoles** : CRUD + logo upload + pays
+- **Types d'apprentissage** : CRUD learning_tracks
+- **Durées** : CRUD course_durations
+- **Formations** (existant) : ajouter sélecteur Type couverture (Image/YouTube), champ URL YouTube, prix, niveau
 
-## Phase 4 — Affiliation
+---
 
-- Table `affiliate_codes (user_id, code unique, expires_at, uses_count)`.
-- Table `affiliate_uses (code_id, used_by, payment_id)`.
-- Génération 1 code par utilisateur (30 jours).
-- À l'utilisation : −5 % au nouvel utilisateur, +10 % crédité au propriétaire (cumulable jusqu'à 100 %), au 10ᵉ usage : 1 module gratuit attribué + reset compteur.
-- Dashboard affiliation : utilisations / gains / modules gratuits gagnés.
+## Phase 3 — Refonte Accueil + parcours inscription
 
-## Phase 5 — Refonte design premium
+### Accueil (`src/routes/index.tsx`)
+- **Hero Slider premium** : embla-carousel, autoplay 5s, dots, prev/next, glassmorphism, supporte texte/image/vidéo YouTube (lecture muet+loop via `youtube.com/embed?autoplay=1&mute=1&loop=1`)
+- **Barre de recherche** : filtre instantané (titre + école + catégorie)
+- **Sections** :
+  - 🔥 Formations populaires (par nb inscriptions)
+  - ⭐ Recommandées
+  - 🎓 Nouvelles
+  - 🏆 Meilleurs étudiants (top badges)
+  - 📜 Derniers certificats
+  - 📢 Annonces récentes
+- **Carte formation premium** : cover image OU iframe YouTube, hover scale Netflix-style, badge Premium, prix, modules, niveau, bouton **🎓 Hianatra**
 
-- Palette : Bleu professionnel #1E3A8A + Doré #D4AF37 + Blanc + Noir moderne. Mise à jour `src/styles.css` (tokens, gradients, shadows).
-- Cartes formations modernes (cover image, gradient overlay, badge prix).
-- Dashboard admin avec stats visuelles (recharts) : revenus, paiements en attente, utilisateurs actifs.
-- Animations (framer-motion déjà dispo ? sinon transitions CSS).
-- Progression utilisateur : barre par formation, indicateur modules.
-- Bottom nav mobile redesign, header desktop premium.
+### Modal Hianatra (4 étapes)
+1. Choix track (Tsotra / Certificat / Diplôme équiv / Diplôme)
+2. Choix école
+3. Choix durée
+4. Récap → crée `formation_enrollments` → redirige vers `/formations/$id` (modules + paiement existant)
 
-## Détails techniques
+### Design
+Palette nuit (bleu nuit/noir/violet/or) déjà partiellement présente — renforcer via tokens `--gradient-hero`, `--gold`. Animations fade-in / hover-scale / skeleton.
 
-- 5 nouvelles migrations (api_settings, user_discounts, certificates, affiliate_codes/uses, colonnes profiles+modules).
-- 2 nouveaux buckets : `formation-covers` (public), `avatars` (public), `certificates` (privé).
-- ~6 server functions admin supplémentaires (saveApiKey, setUserDiscount, generateAffiliateCode, redeemAffiliateCode, uploadCertificate, etc.) toutes protégées via `has_role('admin')`.
-- jsPDF + qrcode pour certificats côté client.
-- recharts pour dashboard admin.
+---
 
-## Estimation
+## Technique
+- `src/components/HeroSlider.tsx`, `SearchBar.tsx`, `FormationCard.tsx`, `HianatraDialog.tsx`, `YouTubeCover.tsx`
+- `src/lib/youtube.ts` : extract video ID (déjà existant — étendre)
+- Admin tabs : `AnnouncementsTab.tsx`, `SchoolsTab.tsx`, `TracksTab.tsx`, `DurationsTab.tsx`
+- Server fns : `hero.functions.ts`, `schools.functions.ts`, `enrollment.functions.ts`
 
-Travail très volumineux (~30-40 fichiers modifiés/créés, 5 migrations, génération de 6 images). Je recommande de livrer **Phase 1 d'abord** (vos blocages immédiats : clé YouTube + paiements + images), puis d'enchaîner phase par phase après votre validation de chaque livraison.
+---
 
 ## Question
-
-Souhaitez-vous que je :
-- **(A)** Démarre par la **Phase 1 seule** (corrections critiques) et qu'on enchaîne ensuite ?
-- **(B)** Exécute **tout le plan d'un coup** (long, plus de risques d'erreurs à corriger en cascade) ?
-- **(C)** Réordonner / retirer certaines phases ?
+Voulez-vous que je démarre par la **Phase 1 (migration DB)** maintenant ? Une fois approuvée, j'enchaîne Phase 2 puis Phase 3 dans les tours suivants. Ou préférez-vous tout en un seul gros lot (plus long, plus risqué) ?
