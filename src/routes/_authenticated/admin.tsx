@@ -37,6 +37,10 @@ function AdminPage() {
           <TabsTrigger value="dashboard">{t("admin.dashboard")}</TabsTrigger>
           <TabsTrigger value="payments">{t("admin.payments_mgmt")}</TabsTrigger>
           <TabsTrigger value="modules">{t("admin.modules_mgmt")}</TabsTrigger>
+          <TabsTrigger value="hero">Slider accueil</TabsTrigger>
+          <TabsTrigger value="schools">Écoles</TabsTrigger>
+          <TabsTrigger value="tracks">Types apprentissage</TabsTrigger>
+          <TabsTrigger value="durations">Durées</TabsTrigger>
           <TabsTrigger value="users">{t("admin.users_mgmt")}</TabsTrigger>
           <TabsTrigger value="announcements">{t("admin.announcements_mgmt")}</TabsTrigger>
           <TabsTrigger value="messages">{t("admin.messages_mgmt")}</TabsTrigger>
@@ -47,6 +51,10 @@ function AdminPage() {
         <TabsContent value="dashboard"><DashboardTab /></TabsContent>
         <TabsContent value="payments"><PaymentsTab /></TabsContent>
         <TabsContent value="modules"><ModulesTab /></TabsContent>
+        <TabsContent value="hero"><HeroSlidesTab /></TabsContent>
+        <TabsContent value="schools"><SchoolsTab /></TabsContent>
+        <TabsContent value="tracks"><TracksTab /></TabsContent>
+        <TabsContent value="durations"><DurationsTab /></TabsContent>
         <TabsContent value="users"><UsersTab /></TabsContent>
         <TabsContent value="announcements"><AnnouncementsTab /></TabsContent>
         <TabsContent value="messages"><MessagesTab /></TabsContent>
@@ -242,10 +250,7 @@ function ModulesTab() {
         <Card key={f.id}>
           <CardHeader>
             <CardTitle className="text-base">{f.title}</CardTitle>
-            <div className="mt-3">
-              <Label className="text-xs mb-1 block">Image de couverture</Label>
-              <CoverUploader formation={f} onSaved={() => qc.invalidateQueries({ queryKey: ["admin-formations"] })} />
-            </div>
+            <FormationCoverEditor formation={f} onSaved={() => qc.invalidateQueries({ queryKey: ["admin-formations"] })} />
           </CardHeader>
           <CardContent className="space-y-2">
             {f.modules?.sort((a: any, b: any) => a.display_order - b.display_order).map((m: any) => (
@@ -463,6 +468,339 @@ function EmailSettingsTab() {
           <p className="text-xs text-muted-foreground mt-3">Les notifications in-app pour ces événements sont déjà actives.</p>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+// ============================================================
+// FORMATION COVER EDITOR — image OR YouTube video + price/level
+// ============================================================
+function FormationCoverEditor({ formation, onSaved }: { formation: any; onSaved: () => void }) {
+  const [coverType, setCoverType] = useState<string>(formation.cover_type ?? "image");
+  const [youtubeUrl, setYoutubeUrl] = useState(formation.youtube_url ?? "");
+  const [price, setPrice] = useState<number>(Number(formation.price ?? 0));
+  const [level, setLevel] = useState<string>(formation.level ?? "debutant");
+
+  const save = async (patch: any) => {
+    const { error } = await supabase.from("formations").update(patch).eq("id", formation.id);
+    if (error) return toast.error(error.message);
+    toast.success("Formation mise à jour");
+    onSaved();
+  };
+
+  return (
+    <div className="mt-3 space-y-3">
+      <div className="grid gap-2 md:grid-cols-3">
+        <div>
+          <Label className="text-xs">Type de couverture</Label>
+          <select value={coverType} onChange={(e) => { setCoverType(e.target.value); save({ cover_type: e.target.value }); }}
+            className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm">
+            <option value="image">Image</option>
+            <option value="video">Vidéo YouTube</option>
+          </select>
+        </div>
+        <div>
+          <Label className="text-xs">Niveau</Label>
+          <select value={level} onChange={(e) => { setLevel(e.target.value); save({ level: e.target.value }); }}
+            className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm">
+            <option value="debutant">Débutant</option>
+            <option value="intermediaire">Intermédiaire</option>
+            <option value="avance">Avancé</option>
+          </select>
+        </div>
+        <div>
+          <Label className="text-xs">Prix (Ar)</Label>
+          <Input type="number" value={price} onChange={(e) => setPrice(Number(e.target.value))}
+            onBlur={() => { if (price !== Number(formation.price ?? 0)) save({ price }); }} />
+        </div>
+      </div>
+
+      {coverType === "image" ? (
+        <div>
+          <Label className="text-xs mb-1 block">Image de couverture</Label>
+          <CoverUploader formation={formation} onSaved={onSaved} />
+        </div>
+      ) : (
+        <div>
+          <Label className="text-xs">URL vidéo YouTube</Label>
+          <div className="flex gap-2">
+            <Input placeholder="https://www.youtube.com/watch?v=..." value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} />
+            <Button size="sm" onClick={() => save({ youtube_url: youtubeUrl })}>Enregistrer</Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">La vidéo se jouera automatiquement en muet et en boucle sur la couverture.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// HERO SLIDES TAB
+// ============================================================
+function HeroSlidesTab() {
+  const qc = useQueryClient();
+  const { data } = useQuery({
+    queryKey: ["admin-hero-slides"],
+    queryFn: async () => (await supabase.from("hero_slides").select("*").order("display_order")).data ?? [],
+  });
+  const [draft, setDraft] = useState({ type: "text", title: "", body: "", youtube_url: "", cta_label: "", cta_url: "", display_order: 0 });
+  const [file, setFile] = useState<File | null>(null);
+
+  const add = async (e: React.FormEvent) => {
+    e.preventDefault();
+    let media_url: string | null = null;
+    if (draft.type === "image" && file) {
+      const path = `hero/${crypto.randomUUID()}-${file.name}`;
+      const { error: upErr } = await supabase.storage.from("formation-covers").upload(path, file);
+      if (upErr) return toast.error(upErr.message);
+      media_url = path;
+    }
+    const { error } = await supabase.from("hero_slides").insert({ ...draft, media_url, is_active: true });
+    if (error) return toast.error(error.message);
+    toast.success("Annonce ajoutée");
+    setDraft({ type: "text", title: "", body: "", youtube_url: "", cta_label: "", cta_url: "", display_order: 0 });
+    setFile(null);
+    qc.invalidateQueries({ queryKey: ["admin-hero-slides"] });
+    qc.invalidateQueries({ queryKey: ["hero-slides"] });
+  };
+
+  const update = async (id: string, patch: any) => {
+    const { error } = await supabase.from("hero_slides").update(patch).eq("id", id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["admin-hero-slides"] });
+    qc.invalidateQueries({ queryKey: ["hero-slides"] });
+  };
+  const remove = async (id: string) => {
+    if (!confirm("Supprimer cette annonce ?")) return;
+    await supabase.from("hero_slides").delete().eq("id", id);
+    qc.invalidateQueries({ queryKey: ["admin-hero-slides"] });
+    qc.invalidateQueries({ queryKey: ["hero-slides"] });
+  };
+
+  return (
+    <div className="mt-4 space-y-4">
+      <Card>
+        <CardHeader><CardTitle className="text-base">Ajouter une annonce</CardTitle></CardHeader>
+        <CardContent>
+          <form onSubmit={add} className="space-y-2">
+            <div className="grid gap-2 md:grid-cols-2">
+              <div>
+                <Label className="text-xs">Type</Label>
+                <select value={draft.type} onChange={(e) => setDraft({ ...draft, type: e.target.value })}
+                  className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm">
+                  <option value="text">Texte</option>
+                  <option value="image">Image</option>
+                  <option value="video">Vidéo YouTube</option>
+                </select>
+              </div>
+              <div>
+                <Label className="text-xs">Ordre</Label>
+                <Input type="number" value={draft.display_order} onChange={(e) => setDraft({ ...draft, display_order: Number(e.target.value) })} />
+              </div>
+            </div>
+            <Input placeholder="Titre" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} />
+            <Textarea placeholder="Description" value={draft.body} onChange={(e) => setDraft({ ...draft, body: e.target.value })} />
+            {draft.type === "image" && <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />}
+            {draft.type === "video" && <Input placeholder="URL YouTube" value={draft.youtube_url} onChange={(e) => setDraft({ ...draft, youtube_url: e.target.value })} />}
+            <div className="grid gap-2 md:grid-cols-2">
+              <Input placeholder="Libellé bouton (optionnel)" value={draft.cta_label} onChange={(e) => setDraft({ ...draft, cta_label: e.target.value })} />
+              <Input placeholder="Lien bouton (optionnel)" value={draft.cta_url} onChange={(e) => setDraft({ ...draft, cta_url: e.target.value })} />
+            </div>
+            <Button type="submit" className="bg-gradient-primary">Ajouter l'annonce</Button>
+          </form>
+        </CardContent>
+      </Card>
+      {data?.map((s: any) => (
+        <Card key={s.id}>
+          <CardContent className="py-3 flex flex-wrap items-center gap-3 justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="font-medium">{s.title || <em className="text-muted-foreground">(sans titre)</em>}</p>
+              <p className="text-xs text-muted-foreground">Type: {s.type} • Ordre: {s.display_order}</p>
+              {s.body && <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{s.body}</p>}
+            </div>
+            <div className="flex gap-2">
+              <Input type="number" defaultValue={s.display_order} className="w-20" onBlur={(e) => update(s.id, { display_order: Number(e.target.value) })} />
+              <Button size="sm" variant="outline" onClick={() => update(s.id, { is_active: !s.is_active })}>{s.is_active ? "Désactiver" : "Activer"}</Button>
+              <Button size="sm" variant="destructive" onClick={() => remove(s.id)}>Supprimer</Button>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+// ============================================================
+// SCHOOLS TAB
+// ============================================================
+function SchoolsTab() {
+  const qc = useQueryClient();
+  const { data } = useQuery({ queryKey: ["admin-schools"], queryFn: async () => (await supabase.from("schools").select("*").order("display_order")).data ?? [] });
+  const [draft, setDraft] = useState({ name: "", description: "", country: "", logo_url: "", display_order: 0 });
+  const add = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { error } = await supabase.from("schools").insert({ ...draft, is_active: true });
+    if (error) return toast.error(error.message);
+    setDraft({ name: "", description: "", country: "", logo_url: "", display_order: 0 });
+    qc.invalidateQueries({ queryKey: ["admin-schools"] });
+    qc.invalidateQueries({ queryKey: ["schools"] });
+    toast.success("École ajoutée");
+  };
+  const update = async (id: string, patch: any) => {
+    await supabase.from("schools").update(patch).eq("id", id);
+    qc.invalidateQueries({ queryKey: ["admin-schools"] });
+    qc.invalidateQueries({ queryKey: ["schools"] });
+  };
+  const remove = async (id: string) => {
+    if (!confirm("Supprimer ?")) return;
+    await supabase.from("schools").delete().eq("id", id);
+    qc.invalidateQueries({ queryKey: ["admin-schools"] });
+    qc.invalidateQueries({ queryKey: ["schools"] });
+  };
+  return (
+    <div className="mt-4 space-y-3">
+      <Card><CardContent className="py-4">
+        <form onSubmit={add} className="space-y-2">
+          <Input placeholder="Nom de l'école" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} required />
+          <div className="grid gap-2 md:grid-cols-2">
+            <Input placeholder="Pays" value={draft.country} onChange={(e) => setDraft({ ...draft, country: e.target.value })} />
+            <Input type="url" placeholder="URL du logo (optionnel)" value={draft.logo_url} onChange={(e) => setDraft({ ...draft, logo_url: e.target.value })} />
+          </div>
+          <Textarea placeholder="Description" value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} />
+          <Button type="submit" className="bg-gradient-primary">Ajouter</Button>
+        </form>
+      </CardContent></Card>
+      {data?.map((s: any) => (
+        <Card key={s.id}><CardContent className="py-3 flex items-center gap-3 justify-between flex-wrap">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            {s.logo_url ? <img src={s.logo_url} alt={s.name} className="h-10 w-10 rounded-lg object-cover" /> : <div className="h-10 w-10 rounded-lg bg-gradient-primary grid place-items-center text-white font-bold">{s.name[0]}</div>}
+            <div className="min-w-0">
+              <Input defaultValue={s.name} onBlur={(e) => e.target.value !== s.name && update(s.id, { name: e.target.value })} className="font-medium" />
+              <p className="text-xs text-muted-foreground mt-1">{s.country} {!s.is_active && "• Inactive"}</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => update(s.id, { is_active: !s.is_active })}>{s.is_active ? "Désactiver" : "Activer"}</Button>
+            <Button size="sm" variant="destructive" onClick={() => remove(s.id)}>Supprimer</Button>
+          </div>
+        </CardContent></Card>
+      ))}
+    </div>
+  );
+}
+
+// ============================================================
+// TRACKS TAB
+// ============================================================
+function TracksTab() {
+  const qc = useQueryClient();
+  const { data } = useQuery({ queryKey: ["admin-tracks"], queryFn: async () => (await supabase.from("learning_tracks").select("*").order("display_order")).data ?? [] });
+  const [draft, setDraft] = useState({ code: "", label: "", description: "", price_multiplier: 1, display_order: 0 });
+  const add = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { error } = await supabase.from("learning_tracks").insert({ ...draft, is_active: true });
+    if (error) return toast.error(error.message);
+    setDraft({ code: "", label: "", description: "", price_multiplier: 1, display_order: 0 });
+    qc.invalidateQueries({ queryKey: ["admin-tracks"] });
+    qc.invalidateQueries({ queryKey: ["tracks"] });
+    toast.success("Ajouté");
+  };
+  const update = async (id: string, patch: any) => {
+    await supabase.from("learning_tracks").update(patch).eq("id", id);
+    qc.invalidateQueries({ queryKey: ["admin-tracks"] });
+    qc.invalidateQueries({ queryKey: ["tracks"] });
+  };
+  const remove = async (id: string) => {
+    if (!confirm("Supprimer ?")) return;
+    await supabase.from("learning_tracks").delete().eq("id", id);
+    qc.invalidateQueries({ queryKey: ["admin-tracks"] });
+    qc.invalidateQueries({ queryKey: ["tracks"] });
+  };
+  return (
+    <div className="mt-4 space-y-3">
+      <Card><CardContent className="py-4">
+        <form onSubmit={add} className="space-y-2">
+          <div className="grid gap-2 md:grid-cols-2">
+            <Input placeholder="Code (ex: certificat)" value={draft.code} onChange={(e) => setDraft({ ...draft, code: e.target.value })} required />
+            <Input placeholder="Libellé affiché" value={draft.label} onChange={(e) => setDraft({ ...draft, label: e.target.value })} required />
+          </div>
+          <Textarea placeholder="Description" value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} />
+          <div className="grid gap-2 md:grid-cols-2">
+            <Input type="number" step="0.1" placeholder="Multiplicateur prix" value={draft.price_multiplier} onChange={(e) => setDraft({ ...draft, price_multiplier: Number(e.target.value) })} />
+            <Input type="number" placeholder="Ordre" value={draft.display_order} onChange={(e) => setDraft({ ...draft, display_order: Number(e.target.value) })} />
+          </div>
+          <Button type="submit" className="bg-gradient-primary">Ajouter</Button>
+        </form>
+      </CardContent></Card>
+      {data?.map((tr: any) => (
+        <Card key={tr.id}><CardContent className="py-3 flex items-center gap-3 justify-between">
+          <div className="flex-1 min-w-0">
+            <p className="font-medium">{tr.label} <span className="text-xs text-muted-foreground">({tr.code})</span></p>
+            <p className="text-xs text-muted-foreground">{tr.description} • ×{tr.price_multiplier}</p>
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => update(tr.id, { is_active: !tr.is_active })}>{tr.is_active ? "Désactiver" : "Activer"}</Button>
+            <Button size="sm" variant="destructive" onClick={() => remove(tr.id)}>Supprimer</Button>
+          </div>
+        </CardContent></Card>
+      ))}
+    </div>
+  );
+}
+
+// ============================================================
+// DURATIONS TAB
+// ============================================================
+function DurationsTab() {
+  const qc = useQueryClient();
+  const { data } = useQuery({ queryKey: ["admin-durations"], queryFn: async () => (await supabase.from("course_durations").select("*").order("display_order")).data ?? [] });
+  const [draft, setDraft] = useState({ name: "", description: "", duration_weeks: 12, price_multiplier: 1, display_order: 0 });
+  const add = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { error } = await supabase.from("course_durations").insert({ ...draft, is_active: true });
+    if (error) return toast.error(error.message);
+    setDraft({ name: "", description: "", duration_weeks: 12, price_multiplier: 1, display_order: 0 });
+    qc.invalidateQueries({ queryKey: ["admin-durations"] });
+    qc.invalidateQueries({ queryKey: ["durations"] });
+    toast.success("Ajouté");
+  };
+  const update = async (id: string, patch: any) => {
+    await supabase.from("course_durations").update(patch).eq("id", id);
+    qc.invalidateQueries({ queryKey: ["admin-durations"] });
+    qc.invalidateQueries({ queryKey: ["durations"] });
+  };
+  const remove = async (id: string) => {
+    if (!confirm("Supprimer ?")) return;
+    await supabase.from("course_durations").delete().eq("id", id);
+    qc.invalidateQueries({ queryKey: ["admin-durations"] });
+    qc.invalidateQueries({ queryKey: ["durations"] });
+  };
+  return (
+    <div className="mt-4 space-y-3">
+      <Card><CardContent className="py-4">
+        <form onSubmit={add} className="space-y-2">
+          <Input placeholder="Nom (ex: Cours du Soir)" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} required />
+          <Textarea placeholder="Description" value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} />
+          <div className="grid gap-2 md:grid-cols-3">
+            <Input type="number" placeholder="Semaines" value={draft.duration_weeks} onChange={(e) => setDraft({ ...draft, duration_weeks: Number(e.target.value) })} />
+            <Input type="number" step="0.1" placeholder="Multiplicateur" value={draft.price_multiplier} onChange={(e) => setDraft({ ...draft, price_multiplier: Number(e.target.value) })} />
+            <Input type="number" placeholder="Ordre" value={draft.display_order} onChange={(e) => setDraft({ ...draft, display_order: Number(e.target.value) })} />
+          </div>
+          <Button type="submit" className="bg-gradient-primary">Ajouter</Button>
+        </form>
+      </CardContent></Card>
+      {data?.map((d: any) => (
+        <Card key={d.id}><CardContent className="py-3 flex items-center gap-3 justify-between">
+          <div className="flex-1 min-w-0">
+            <p className="font-medium">{d.name}</p>
+            <p className="text-xs text-muted-foreground">{d.description} • {d.duration_weeks} sem. • ×{d.price_multiplier}</p>
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => update(d.id, { is_active: !d.is_active })}>{d.is_active ? "Désactiver" : "Activer"}</Button>
+            <Button size="sm" variant="destructive" onClick={() => remove(d.id)}>Supprimer</Button>
+          </div>
+        </CardContent></Card>
+      ))}
     </div>
   );
 }

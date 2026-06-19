@@ -5,10 +5,39 @@ export function extractPlaylistId(url: string): string | null {
     const id = u.searchParams.get("list");
     return id;
   } catch {
-    // Maybe a raw id
     if (/^[A-Za-z0-9_-]{10,}$/.test(url)) return url;
     return null;
   }
+}
+
+export function extractYouTubeId(url: string): string | null {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes("youtu.be")) return u.pathname.slice(1) || null;
+    const v = u.searchParams.get("v");
+    if (v) return v;
+    const m = u.pathname.match(/\/(embed|shorts|v)\/([A-Za-z0-9_-]{6,})/);
+    if (m) return m[2];
+    return null;
+  } catch {
+    if (/^[A-Za-z0-9_-]{6,15}$/.test(url)) return url;
+    return null;
+  }
+}
+
+export function youtubeEmbedUrl(url: string, opts: { autoplay?: boolean; mute?: boolean; loop?: boolean; controls?: boolean } = {}): string | null {
+  const id = extractYouTubeId(url);
+  if (!id) return null;
+  const params = new URLSearchParams();
+  if (opts.autoplay) params.set("autoplay", "1");
+  if (opts.mute) params.set("mute", "1");
+  if (opts.loop) { params.set("loop", "1"); params.set("playlist", id); }
+  params.set("controls", opts.controls === false ? "0" : "1");
+  params.set("modestbranding", "1");
+  params.set("rel", "0");
+  params.set("playsinline", "1");
+  return `https://www.youtube.com/embed/${id}?${params.toString()}`;
 }
 
 export function parseISO8601Duration(iso: string): number {

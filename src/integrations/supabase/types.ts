@@ -166,35 +166,229 @@ export type Database = {
           },
         ]
       }
+      course_durations: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          duration_weeks: number | null
+          id: string
+          is_active: boolean
+          name: string
+          price_multiplier: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          duration_weeks?: number | null
+          id?: string
+          is_active?: boolean
+          name: string
+          price_multiplier?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          duration_weeks?: number | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          price_multiplier?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      formation_enrollments: {
+        Row: {
+          created_at: string
+          duration_id: string | null
+          formation_id: string
+          id: string
+          school_id: string | null
+          status: string
+          track_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_id?: string | null
+          formation_id: string
+          id?: string
+          school_id?: string | null
+          status?: string
+          track_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_id?: string | null
+          formation_id?: string
+          id?: string
+          school_id?: string | null
+          status?: string
+          track_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "formation_enrollments_duration_id_fkey"
+            columns: ["duration_id"]
+            isOneToOne: false
+            referencedRelation: "course_durations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "formation_enrollments_formation_id_fkey"
+            columns: ["formation_id"]
+            isOneToOne: false
+            referencedRelation: "formations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "formation_enrollments_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "formation_enrollments_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "learning_tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       formations: {
         Row: {
+          cover_type: string
           cover_url: string | null
           created_at: string
           description: string | null
           display_order: number
           id: string
           is_active: boolean
+          level: string | null
+          price: number | null
           title: string
+          updated_at: string
+          youtube_url: string | null
+        }
+        Insert: {
+          cover_type?: string
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          level?: string | null
+          price?: number | null
+          title: string
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Update: {
+          cover_type?: string
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          level?: string | null
+          price?: number | null
+          title?: string
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      hero_slides: {
+        Row: {
+          body: string | null
+          created_at: string
+          cta_label: string | null
+          cta_url: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          media_url: string | null
+          title: string | null
+          type: string
+          updated_at: string
+          youtube_url: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          cta_label?: string | null
+          cta_url?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          media_url?: string | null
+          title?: string | null
+          type: string
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          cta_label?: string | null
+          cta_url?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          media_url?: string | null
+          title?: string | null
+          type?: string
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      learning_tracks: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          label: string
+          price_multiplier: number
           updated_at: string
         }
         Insert: {
-          cover_url?: string | null
+          code: string
           created_at?: string
           description?: string | null
           display_order?: number
           id?: string
           is_active?: boolean
-          title: string
+          label: string
+          price_multiplier?: number
           updated_at?: string
         }
         Update: {
-          cover_url?: string | null
+          code?: string
           created_at?: string
           description?: string | null
           display_order?: number
           id?: string
           is_active?: boolean
-          title?: string
+          label?: string
+          price_multiplier?: number
           updated_at?: string
         }
         Relationships: []
@@ -459,6 +653,42 @@ export type Database = {
           id?: string
           is_blocked?: boolean
           phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      schools: {
+        Row: {
+          country: string | null
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
           updated_at?: string
         }
         Relationships: []
