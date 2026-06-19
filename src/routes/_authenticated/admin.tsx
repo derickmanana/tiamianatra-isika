@@ -250,10 +250,7 @@ function ModulesTab() {
         <Card key={f.id}>
           <CardHeader>
             <CardTitle className="text-base">{f.title}</CardTitle>
-            <div className="mt-3">
-              <Label className="text-xs mb-1 block">Image de couverture</Label>
-              <CoverUploader formation={f} onSaved={() => qc.invalidateQueries({ queryKey: ["admin-formations"] })} />
-            </div>
+            <FormationCoverEditor formation={f} onSaved={() => qc.invalidateQueries({ queryKey: ["admin-formations"] })} />
           </CardHeader>
           <CardContent className="space-y-2">
             {f.modules?.sort((a: any, b: any) => a.display_order - b.display_order).map((m: any) => (
