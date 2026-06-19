@@ -37,6 +37,10 @@ function AdminPage() {
           <TabsTrigger value="dashboard">{t("admin.dashboard")}</TabsTrigger>
           <TabsTrigger value="payments">{t("admin.payments_mgmt")}</TabsTrigger>
           <TabsTrigger value="modules">{t("admin.modules_mgmt")}</TabsTrigger>
+          <TabsTrigger value="hero">Slider accueil</TabsTrigger>
+          <TabsTrigger value="schools">Écoles</TabsTrigger>
+          <TabsTrigger value="tracks">Types apprentissage</TabsTrigger>
+          <TabsTrigger value="durations">Durées</TabsTrigger>
           <TabsTrigger value="users">{t("admin.users_mgmt")}</TabsTrigger>
           <TabsTrigger value="announcements">{t("admin.announcements_mgmt")}</TabsTrigger>
           <TabsTrigger value="messages">{t("admin.messages_mgmt")}</TabsTrigger>
@@ -47,6 +51,10 @@ function AdminPage() {
         <TabsContent value="dashboard"><DashboardTab /></TabsContent>
         <TabsContent value="payments"><PaymentsTab /></TabsContent>
         <TabsContent value="modules"><ModulesTab /></TabsContent>
+        <TabsContent value="hero"><HeroSlidesTab /></TabsContent>
+        <TabsContent value="schools"><SchoolsTab /></TabsContent>
+        <TabsContent value="tracks"><TracksTab /></TabsContent>
+        <TabsContent value="durations"><DurationsTab /></TabsContent>
         <TabsContent value="users"><UsersTab /></TabsContent>
         <TabsContent value="announcements"><AnnouncementsTab /></TabsContent>
         <TabsContent value="messages"><MessagesTab /></TabsContent>
