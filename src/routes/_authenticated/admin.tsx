@@ -806,3 +806,144 @@ function DurationsTab() {
     </div>
   );
 }
+
+// ============================================================
+// FORMATIONS CRUD TAB
+// ============================================================
+function FormationsAdminTab() {
+  const qc = useQueryClient();
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [confirmDel, setConfirmDel] = useState<string | null>(null);
+
+  const { data: list } = useQuery({
+    queryKey: ["admin-formations-list"],
+    queryFn: async () =>
+      (await supabase.from("formations").select("*, modules(count)").order("display_order")).data ?? [],
+  });
+
+  const refresh = () => {
+    qc.invalidateQueries({ queryKey: ["admin-formations-list"] });
+    qc.invalidateQueries({ queryKey: ["admin-formations"] });
+    qc.invalidateQueries({ queryKey: ["home-formations"] });
+    qc.invalidateQueries({ queryKey: ["formations"] });
+  };
+
+  const add = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) return toast.error("Titre requis");
+    const nextOrder = (list?.length ?? 0) + 1;
+    const { error } = await supabase.from("formations").insert({
+      title: title.trim(),
+      description: description.trim() || null,
+      display_order: nextOrder,
+      is_active: true,
+    });
+    if (error) return toast.error(error.message);
+    toast.success("Formation créée");
+    setTitle(""); setDescription("");
+    refresh();
+  };
+
+  const update = async (id: string, patch: any) => {
+    const { error } = await supabase.from("formations").update(patch).eq("id", id);
+    if (error) return toast.error(error.message);
+    refresh();
+  };
+
+  const remove = async (id: string) => {
+    const { error } = await supabase.from("formations").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Formation supprimée");
+    setConfirmDel(null);
+    refresh();
+  };
+
+  const move = async (id: string, dir: -1 | 1) => {
+    if (!list) return;
+    const idx = list.findIndex((f: any) => f.id === id);
+    const swap = list[idx + dir];
+    if (!swap) return;
+    const a = list[idx];
+    await Promise.all([
+      supabase.from("formations").update({ display_order: swap.display_order }).eq("id", a.id),
+      supabase.from("formations").update({ display_order: a.display_order }).eq("id", swap.id),
+    ]);
+    refresh();
+  };
+
+  return (
+    <div className="mt-4 space-y-4">
+      <Card>
+        <CardHeader><CardTitle className="text-base">➕ Ajouter une formation</CardTitle></CardHeader>
+        <CardContent>
+          <form onSubmit={add} className="space-y-2">
+            <Input placeholder="Nom de la formation" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            <Textarea placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
+            <Button type="submit" className="bg-gradient-primary">Créer</Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <div className="space-y-2">
+        {list?.map((f: any, i: number) => (
+          <Card key={f.id}>
+            <CardContent className="py-3 space-y-2">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">#{f.display_order}</span>
+                    <Input
+                      defaultValue={f.title}
+                      onBlur={(e) => { if (e.target.value !== f.title) update(f.id, { title: e.target.value }); }}
+                      className="font-medium"
+                    />
+                  </div>
+                  <Textarea
+                    defaultValue={f.description ?? ""}
+                    placeholder="Description"
+                    rows={2}
+                    className="mt-2"
+                    onBlur={(e) => { if (e.target.value !== (f.description ?? "")) update(f.id, { description: e.target.value || null }); }}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {f.modules?.[0]?.count ?? 0} modules • Prix: {Number(f.price ?? 0).toLocaleString()} Ar • Niveau: {f.level ?? "—"}
+                  </p>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Button size="sm" variant="outline" disabled={i === 0} onClick={() => move(f.id, -1)}>↑</Button>
+                  <Button size="sm" variant="outline" disabled={i === (list.length - 1)} onClick={() => move(f.id, 1)}>↓</Button>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 items-center">
+                <Badge variant={f.is_active ? "default" : "secondary"}>
+                  {f.is_active ? "Active" : "Désactivée"}
+                </Badge>
+                <Button size="sm" variant="outline" onClick={() => update(f.id, { is_active: !f.is_active })}>
+                  {f.is_active ? "Désactiver" : "Activer"}
+                </Button>
+                <Button size="sm" variant="destructive" onClick={() => setConfirmDel(f.id)}>Supprimer</Button>
+              </div>
+              <FormationCoverEditor formation={f} onSaved={refresh} />
+            </CardContent>
+          </Card>
+        ))}
+        {list?.length === 0 && <p className="text-sm text-muted-foreground">Aucune formation. Créez-en une ci-dessus.</p>}
+      </div>
+
+      <Dialog open={!!confirmDel} onOpenChange={(o) => !o && setConfirmDel(null)}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Supprimer cette formation ?</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Cette action est irréversible. Tous les modules, vidéos et paiements liés seront également supprimés.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDel(null)}>Annuler</Button>
+            <Button variant="destructive" onClick={() => confirmDel && remove(confirmDel)}>Supprimer définitivement</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
