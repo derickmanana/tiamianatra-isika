@@ -36,6 +36,7 @@ function AdminPage() {
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="dashboard">{t("admin.dashboard")}</TabsTrigger>
           <TabsTrigger value="payments">{t("admin.payments_mgmt")}</TabsTrigger>
+          <TabsTrigger value="formations">Formations</TabsTrigger>
           <TabsTrigger value="modules">{t("admin.modules_mgmt")}</TabsTrigger>
           <TabsTrigger value="hero">Slider accueil</TabsTrigger>
           <TabsTrigger value="schools">Écoles</TabsTrigger>
@@ -50,6 +51,7 @@ function AdminPage() {
         </TabsList>
         <TabsContent value="dashboard"><DashboardTab /></TabsContent>
         <TabsContent value="payments"><PaymentsTab /></TabsContent>
+        <TabsContent value="formations"><FormationsAdminTab /></TabsContent>
         <TabsContent value="modules"><ModulesTab /></TabsContent>
         <TabsContent value="hero"><HeroSlidesTab /></TabsContent>
         <TabsContent value="schools"><SchoolsTab /></TabsContent>
