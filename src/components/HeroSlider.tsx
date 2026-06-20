@@ -89,8 +89,8 @@ export function HeroSlider() {
             <div key={s.id} className="flex-[0_0_100%] min-w-0 relative aspect-[16/9] md:aspect-[21/9]">
               <SlideMedia slide={s} />
               <div className="relative z-10 h-full flex items-end p-6 md:p-12">
-                <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-5 md:p-7 max-w-2xl text-white shadow-2xl">
-                  {s.title && <h2 className="text-2xl md:text-4xl font-bold mb-2 drop-shadow">{s.title}</h2>}
+                <div className="bg-black/55 border border-white/15 rounded-2xl p-5 md:p-7 max-w-2xl text-white shadow-2xl">
+                  {s.title && <h2 className="text-2xl md:text-4xl font-bold mb-2" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>{s.title}</h2>}
                   {s.body && <p className="opacity-95 mb-3 text-sm md:text-base line-clamp-3">{s.body}</p>}
                   {s.cta_label && s.cta_url && (
                     <a href={s.cta_url}><Button variant="secondary" size="sm">{s.cta_label}</Button></a>
@@ -102,11 +102,11 @@ export function HeroSlider() {
         </div>
       </div>
       <button onClick={() => embla?.scrollPrev()} aria-label="Précédent"
-        className="absolute left-3 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur text-white grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity">
+        className="absolute left-3 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-black/60 hover:bg-black/80 text-white grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity">
         <ChevronLeft className="h-5 w-5" />
       </button>
       <button onClick={() => embla?.scrollNext()} aria-label="Suivant"
-        className="absolute right-3 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur text-white grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity">
+        className="absolute right-3 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-black/60 hover:bg-black/80 text-white grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity">
         <ChevronRight className="h-5 w-5" />
       </button>
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
