@@ -39,7 +39,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <header className="sticky top-0 z-40 border-b backdrop-blur bg-background/80">
+      <header className="sticky top-0 z-40 border-b bg-background/95">
         <div className="container mx-auto flex items-center justify-between px-4 h-14">
           <Link to="/" className="flex items-center gap-2 font-bold text-lg">
             <span className="h-7 w-7 rounded-lg bg-gradient-primary grid place-items-center text-primary-foreground text-sm shadow-elegant">M</span>
@@ -77,7 +77,7 @@ export function ClientLayout({ children }: { children: ReactNode }) {
 
       <main className="flex-1 container mx-auto px-4 py-6 pb-24 lg:pb-6">{children}</main>
 
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur shadow-elegant">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-background shadow-elegant">
         <div className="grid grid-cols-5">
           {mobileItems.map((it) => {
             const Icon = it.icon;

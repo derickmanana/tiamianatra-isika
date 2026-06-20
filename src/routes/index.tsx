@@ -88,7 +88,7 @@ function HomePage() {
       <div className="min-h-screen bg-gradient-hero relative overflow-hidden">
         <div className="container mx-auto px-4 py-20 lg:py-32 relative z-10">
           <div className="max-w-2xl text-white">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur px-3 py-1 text-xs font-medium mb-6">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-medium mb-6">
               <Sparkles className="h-3.5 w-3.5" /> M'BossTsika
             </div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">{t("home.hero_title")}</h1>
@@ -109,7 +109,6 @@ function HomePage() {
 
       {/* Search */}
       <div className="relative mb-10 -mt-2">
-        <div className="absolute inset-0 bg-gradient-primary opacity-10 blur-2xl rounded-full" />
         <div className="relative flex items-center gap-2 bg-card border border-border/60 rounded-2xl shadow-card p-2 pl-4">
           <Search className="h-5 w-5 text-muted-foreground shrink-0" />
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Rechercher une formation, une école, une catégorie..."
