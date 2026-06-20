@@ -1,0 +1,15 @@
+{
+  "name": "M'BossTsika",
+  "short_name": "M'BossTsika",
+  "description": "Plateforme de formations vidéo premium en ligne",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b1226",
+  "theme_color": "#0b1226",
+  "icons": [
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
