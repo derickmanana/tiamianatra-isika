@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { toast } from "sonner";
+import { PWAInstallButton } from "@/components/PWAInstallButton";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "M'BossTsika — Connexion" }] }),
@@ -50,7 +51,9 @@ function AuthPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
       <div className="absolute top-4 right-4 flex gap-2"><LanguageSelector /><ThemeToggle /></div>
-      <Card className="w-full max-w-md shadow-elegant">
+      <div className="w-full max-w-md">
+      <PWAInstallButton />
+      <Card className="shadow-elegant">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">
             <span className="bg-gradient-primary bg-clip-text text-transparent">M'BossTsika</span>
@@ -81,6 +84,7 @@ function AuthPage() {
           </Tabs>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
