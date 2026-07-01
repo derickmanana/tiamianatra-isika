@@ -949,3 +949,83 @@ function FormationsAdminTab() {
   );
 }
 
+function PartnersAdminTab() {
+  const qc = useQueryClient();
+  const { data: partners } = useQuery({
+    queryKey: ["admin-partners"],
+    queryFn: async () => (await supabase.from("partners").select("*, profiles:user_id(full_name, email)").order("created_at", { ascending: false })).data ?? [],
+  });
+  const { data: pendingForms } = useQuery({
+    queryKey: ["admin-pending-formations"],
+    queryFn: async () => (await supabase.from("formations").select("id, title, status, owner_partner_id").eq("status", "pending")).data ?? [],
+  });
+  const { data: pendingJobs } = useQuery({
+    queryKey: ["admin-pending-jobs"],
+    queryFn: async () => (await supabase.from("job_offers").select("id, title, status, partner_id").eq("status", "pending")).data ?? [],
+  });
+
+  const setStatus = async (table: "partners" | "formations" | "job_offers", id: string, status: string) => {
+    const { error } = await supabase.from(table).update({ status }).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Mis à jour");
+    qc.invalidateQueries();
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader><CardTitle>Demandes partenaires</CardTitle></CardHeader>
+        <CardContent className="space-y-2">
+          {(partners ?? []).map((p: any) => (
+            <div key={p.id} className="p-3 border rounded flex items-center justify-between gap-2 flex-wrap">
+              <div className="min-w-0">
+                <div className="font-medium">{p.display_name} <Badge>{p.partner_type}</Badge> <Badge variant="outline">{p.status}</Badge></div>
+                <div className="text-xs text-muted-foreground">{p.profiles?.email} · {p.company ?? ""}</div>
+              </div>
+              <div className="flex gap-1">
+                <Button size="sm" variant="outline" onClick={() => setStatus("partners", p.id, "approved")}>Approuver</Button>
+                <Button size="sm" variant="outline" onClick={() => setStatus("partners", p.id, "rejected")}>Refuser</Button>
+                <Button size="sm" variant="outline" onClick={() => setStatus("partners", p.id, "suspended")}>Suspendre</Button>
+              </div>
+            </div>
+          ))}
+          {(!partners || partners.length === 0) && <p className="text-sm text-muted-foreground">Aucune demande.</p>}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle>Formations en attente</CardTitle></CardHeader>
+        <CardContent className="space-y-2">
+          {(pendingForms ?? []).map((f: any) => (
+            <div key={f.id} className="p-3 border rounded flex items-center justify-between gap-2">
+              <div className="font-medium truncate">{f.title}</div>
+              <div className="flex gap-1">
+                <Button size="sm" variant="outline" onClick={() => setStatus("formations", f.id, "approved")}>Approuver</Button>
+                <Button size="sm" variant="outline" onClick={() => setStatus("formations", f.id, "rejected")}>Refuser</Button>
+              </div>
+            </div>
+          ))}
+          {(!pendingForms || pendingForms.length === 0) && <p className="text-sm text-muted-foreground">Aucune formation en attente.</p>}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle>Offres d'emploi en attente</CardTitle></CardHeader>
+        <CardContent className="space-y-2">
+          {(pendingJobs ?? []).map((j: any) => (
+            <div key={j.id} className="p-3 border rounded flex items-center justify-between gap-2">
+              <div className="font-medium truncate">{j.title}</div>
+              <div className="flex gap-1">
+                <Button size="sm" variant="outline" onClick={() => setStatus("job_offers", j.id, "approved")}>Approuver</Button>
+                <Button size="sm" variant="outline" onClick={() => setStatus("job_offers", j.id, "rejected")}>Refuser</Button>
+              </div>
+            </div>
+          ))}
+          {(!pendingJobs || pendingJobs.length === 0) && <p className="text-sm text-muted-foreground">Aucune offre en attente.</p>}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+
