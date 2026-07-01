@@ -48,6 +48,7 @@ function AdminPage() {
           <TabsTrigger value="settings">{t("admin.payment_settings")}</TabsTrigger>
           <TabsTrigger value="api">Paramètres API</TabsTrigger>
           <TabsTrigger value="email">Paramètres Email</TabsTrigger>
+          <TabsTrigger value="partners">Partenaires</TabsTrigger>
         </TabsList>
         <TabsContent value="dashboard"><DashboardTab /></TabsContent>
         <TabsContent value="payments"><PaymentsTab /></TabsContent>
@@ -63,6 +64,7 @@ function AdminPage() {
         <TabsContent value="settings"><SettingsTab /></TabsContent>
         <TabsContent value="api"><ApiSettingsTab /></TabsContent>
         <TabsContent value="email"><EmailSettingsTab /></TabsContent>
+        <TabsContent value="partners"><PartnersAdminTab /></TabsContent>
       </Tabs>
     </ClientLayout>
   );
