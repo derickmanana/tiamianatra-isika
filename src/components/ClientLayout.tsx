@@ -61,6 +61,18 @@ export function ClientLayout({ children }: { children: ReactNode }) {
             })}
           </nav>
           <div className="flex items-center gap-1">
+            {partner && partner.status === "approved" && (
+              <Link to="/partenaire">
+                <Button variant="outline" size="sm" className="gap-1.5">
+                  <Briefcase className="h-4 w-4" /> <span className="hidden sm:inline">Partenaire</span>
+                </Button>
+              </Link>
+            )}
+            {!partner && (
+              <Link to="/partenaire" className="hidden md:inline-flex">
+                <Button variant="ghost" size="sm">Devenir partenaire</Button>
+              </Link>
+            )}
             {isAdmin && (
               <Link to="/admin">
                 <Button variant="outline" size="sm" className="gap-1.5 border-gold/50">
