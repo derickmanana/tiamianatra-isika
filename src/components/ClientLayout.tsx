@@ -1,11 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import {
-  Home, GraduationCap, Layers, Wallet, Bell, MessageSquare, User, LogOut, Shield, Sparkles,
+  Home, GraduationCap, Layers, Wallet, Bell, MessageSquare, User, LogOut, Shield, Sparkles, Briefcase,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { usePartner } from "@/hooks/use-partner";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { toast } from "sonner";
 export function ClientLayout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const { isAdmin } = useAuth();
+  const { partner } = usePartner();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const items = [

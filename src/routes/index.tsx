@@ -55,7 +55,7 @@ function HomePage() {
 
   const { data: formations } = useQuery({
     queryKey: ["home-formations"],
-    queryFn: async () => (await supabase.from("formations").select("*, modules(count)").eq("is_active", true).order("display_order")).data ?? [],
+    queryFn: async () => (await supabase.from("formations").select("*, modules(count)").eq("is_active", true).eq("status", "approved").order("display_order")).data ?? [],
   });
   const { data: announcements } = useQuery({
     queryKey: ["home-announcements"],
