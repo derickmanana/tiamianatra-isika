@@ -22,6 +22,8 @@ import { Route as AuthenticatedAffiliationRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedPartenaireIndexRouteImport } from './routes/_authenticated/partenaire.index'
 import { Route as AuthenticatedFormationsIndexRouteImport } from './routes/_authenticated/formations.index'
+import { Route as AuthenticatedPartenaireOffresRouteImport } from './routes/_authenticated/partenaire.offres'
+import { Route as AuthenticatedPartenaireFormationsRouteImport } from './routes/_authenticated/partenaire.formations'
 import { Route as AuthenticatedModulesIdRouteImport } from './routes/_authenticated/modules.$id'
 import { Route as AuthenticatedFormationsIdRouteImport } from './routes/_authenticated/formations.$id'
 
@@ -93,6 +95,18 @@ const AuthenticatedFormationsIndexRoute =
     path: '/formations/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPartenaireOffresRoute =
+  AuthenticatedPartenaireOffresRouteImport.update({
+    id: '/offres',
+    path: '/offres',
+    getParentRoute: () => AuthenticatedPartenaireRoute,
+  } as any)
+const AuthenticatedPartenaireFormationsRoute =
+  AuthenticatedPartenaireFormationsRouteImport.update({
+    id: '/formations',
+    path: '/formations',
+    getParentRoute: () => AuthenticatedPartenaireRoute,
+  } as any)
 const AuthenticatedModulesIdRoute = AuthenticatedModulesIdRouteImport.update({
   id: '/modules/$id',
   path: '/modules/$id',
@@ -118,6 +132,8 @@ export interface FileRoutesByFullPath {
   '/profil': typeof AuthenticatedProfilRoute
   '/formations/$id': typeof AuthenticatedFormationsIdRoute
   '/modules/$id': typeof AuthenticatedModulesIdRoute
+  '/partenaire/formations': typeof AuthenticatedPartenaireFormationsRoute
+  '/partenaire/offres': typeof AuthenticatedPartenaireOffresRoute
   '/formations/': typeof AuthenticatedFormationsIndexRoute
   '/partenaire/': typeof AuthenticatedPartenaireIndexRoute
 }
@@ -133,6 +149,8 @@ export interface FileRoutesByTo {
   '/profil': typeof AuthenticatedProfilRoute
   '/formations/$id': typeof AuthenticatedFormationsIdRoute
   '/modules/$id': typeof AuthenticatedModulesIdRoute
+  '/partenaire/formations': typeof AuthenticatedPartenaireFormationsRoute
+  '/partenaire/offres': typeof AuthenticatedPartenaireOffresRoute
   '/formations': typeof AuthenticatedFormationsIndexRoute
   '/partenaire': typeof AuthenticatedPartenaireIndexRoute
 }
@@ -151,6 +169,8 @@ export interface FileRoutesById {
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/formations/$id': typeof AuthenticatedFormationsIdRoute
   '/_authenticated/modules/$id': typeof AuthenticatedModulesIdRoute
+  '/_authenticated/partenaire/formations': typeof AuthenticatedPartenaireFormationsRoute
+  '/_authenticated/partenaire/offres': typeof AuthenticatedPartenaireOffresRoute
   '/_authenticated/formations/': typeof AuthenticatedFormationsIndexRoute
   '/_authenticated/partenaire/': typeof AuthenticatedPartenaireIndexRoute
 }
@@ -169,6 +189,8 @@ export interface FileRouteTypes {
     | '/profil'
     | '/formations/$id'
     | '/modules/$id'
+    | '/partenaire/formations'
+    | '/partenaire/offres'
     | '/formations/'
     | '/partenaire/'
   fileRoutesByTo: FileRoutesByTo
@@ -184,6 +206,8 @@ export interface FileRouteTypes {
     | '/profil'
     | '/formations/$id'
     | '/modules/$id'
+    | '/partenaire/formations'
+    | '/partenaire/offres'
     | '/formations'
     | '/partenaire'
   id:
@@ -201,6 +225,8 @@ export interface FileRouteTypes {
     | '/_authenticated/profil'
     | '/_authenticated/formations/$id'
     | '/_authenticated/modules/$id'
+    | '/_authenticated/partenaire/formations'
+    | '/_authenticated/partenaire/offres'
     | '/_authenticated/formations/'
     | '/_authenticated/partenaire/'
   fileRoutesById: FileRoutesById
@@ -304,6 +330,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFormationsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/partenaire/offres': {
+      id: '/_authenticated/partenaire/offres'
+      path: '/offres'
+      fullPath: '/partenaire/offres'
+      preLoaderRoute: typeof AuthenticatedPartenaireOffresRouteImport
+      parentRoute: typeof AuthenticatedPartenaireRoute
+    }
+    '/_authenticated/partenaire/formations': {
+      id: '/_authenticated/partenaire/formations'
+      path: '/formations'
+      fullPath: '/partenaire/formations'
+      preLoaderRoute: typeof AuthenticatedPartenaireFormationsRouteImport
+      parentRoute: typeof AuthenticatedPartenaireRoute
+    }
     '/_authenticated/modules/$id': {
       id: '/_authenticated/modules/$id'
       path: '/modules/$id'
@@ -322,11 +362,16 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedPartenaireRouteChildren {
+  AuthenticatedPartenaireFormationsRoute: typeof AuthenticatedPartenaireFormationsRoute
+  AuthenticatedPartenaireOffresRoute: typeof AuthenticatedPartenaireOffresRoute
   AuthenticatedPartenaireIndexRoute: typeof AuthenticatedPartenaireIndexRoute
 }
 
 const AuthenticatedPartenaireRouteChildren: AuthenticatedPartenaireRouteChildren =
   {
+    AuthenticatedPartenaireFormationsRoute:
+      AuthenticatedPartenaireFormationsRoute,
+    AuthenticatedPartenaireOffresRoute: AuthenticatedPartenaireOffresRoute,
     AuthenticatedPartenaireIndexRoute: AuthenticatedPartenaireIndexRoute,
   }
 
