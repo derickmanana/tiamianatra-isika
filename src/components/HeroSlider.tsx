@@ -47,7 +47,17 @@ function SlideMedia({ slide }: { slide: Slide }) {
   if (slide.type === "image" && img) {
     return (
       <div className="absolute inset-0">
-        <img src={img} alt={slide.title ?? ""} className="w-full h-full object-cover" />
+        <img
+          src={img}
+          alt={slide.title ?? ""}
+          loading="lazy"
+          decoding="async"
+          onError={(e) => {
+            console.warn("[HeroSlider] image error", img);
+            (e.currentTarget as HTMLImageElement).style.display = "none";
+          }}
+          className="w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/50" />
       </div>
     );

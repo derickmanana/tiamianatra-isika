@@ -1,23 +1,19 @@
-import webapp from "@/assets/formation-webapp.jpg";
-import china from "@/assets/formation-china.jpg";
-import canva from "@/assets/formation-canva.jpg";
-import music from "@/assets/formation-music.jpg";
-import crypto from "@/assets/formation-crypto.jpg";
-import business from "@/assets/formation-business.jpg";
+import defaultCover from "@/assets/formation-business.jpg";
 
-// Map formation title keywords -> default cover image
-const DEFAULTS: Array<{ match: RegExp; src: string }> = [
-  { match: /application web|web app|cr[eé]ation/i, src: webapp },
-  { match: /chine|china|fanafarana|import/i, src: china },
-  { match: /canva/i, src: canva },
-  { match: /music|musique|instrumental/i, src: music },
-  { match: /crypto/i, src: crypto },
-  { match: /gagner|business|application/i, src: business },
-];
-
+/**
+ * Returns a validated cover URL for a formation.
+ * - If `cover_url` is a valid http(s) URL or a storage path, returns it.
+ * - Otherwise returns a single neutral default image.
+ * No auto-generation, no title-based guessing.
+ */
 export function getFormationCover(formation: { title?: string | null; cover_url?: string | null }): string {
-  if (formation.cover_url && formation.cover_url.trim()) return formation.cover_url;
-  const t = formation.title ?? "";
-  const m = DEFAULTS.find((d) => d.match.test(t));
-  return m?.src ?? business;
+  const raw = formation?.cover_url?.trim();
+  if (!raw) return defaultCover;
+  // Accept http(s) URLs
+  if (/^https?:\/\//i.test(raw)) return raw;
+  // Accept storage paths (resolved elsewhere via signed URL)
+  if (/^[a-zA-Z0-9_\-\/\.]+$/.test(raw)) return raw;
+  return defaultCover;
 }
+
+export { defaultCover };
