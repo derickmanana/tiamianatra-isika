@@ -13,13 +13,17 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
+import { Route as AuthenticatedPartenaireRouteImport } from './routes/_authenticated/partenaire'
 import { Route as AuthenticatedPaiementsRouteImport } from './routes/_authenticated/paiements'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedMesModulesRouteImport } from './routes/_authenticated/mes-modules'
 import { Route as AuthenticatedAffiliationRouteImport } from './routes/_authenticated/affiliation'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedPartenaireIndexRouteImport } from './routes/_authenticated/partenaire.index'
 import { Route as AuthenticatedFormationsIndexRouteImport } from './routes/_authenticated/formations.index'
+import { Route as AuthenticatedPartenaireOffresRouteImport } from './routes/_authenticated/partenaire.offres'
+import { Route as AuthenticatedPartenaireFormationsRouteImport } from './routes/_authenticated/partenaire.formations'
 import { Route as AuthenticatedModulesIdRouteImport } from './routes/_authenticated/modules.$id'
 import { Route as AuthenticatedFormationsIdRouteImport } from './routes/_authenticated/formations.$id'
 
@@ -40,6 +44,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
   id: '/profil',
   path: '/profil',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPartenaireRoute = AuthenticatedPartenaireRouteImport.update({
+  id: '/partenaire',
+  path: '/partenaire',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPaiementsRoute = AuthenticatedPaiementsRouteImport.update({
@@ -74,11 +83,29 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPartenaireIndexRoute =
+  AuthenticatedPartenaireIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPartenaireRoute,
+  } as any)
 const AuthenticatedFormationsIndexRoute =
   AuthenticatedFormationsIndexRouteImport.update({
     id: '/formations/',
     path: '/formations/',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPartenaireOffresRoute =
+  AuthenticatedPartenaireOffresRouteImport.update({
+    id: '/offres',
+    path: '/offres',
+    getParentRoute: () => AuthenticatedPartenaireRoute,
+  } as any)
+const AuthenticatedPartenaireFormationsRoute =
+  AuthenticatedPartenaireFormationsRouteImport.update({
+    id: '/formations',
+    path: '/formations',
+    getParentRoute: () => AuthenticatedPartenaireRoute,
   } as any)
 const AuthenticatedModulesIdRoute = AuthenticatedModulesIdRouteImport.update({
   id: '/modules/$id',
@@ -101,10 +128,14 @@ export interface FileRoutesByFullPath {
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/paiements': typeof AuthenticatedPaiementsRoute
+  '/partenaire': typeof AuthenticatedPartenaireRouteWithChildren
   '/profil': typeof AuthenticatedProfilRoute
   '/formations/$id': typeof AuthenticatedFormationsIdRoute
   '/modules/$id': typeof AuthenticatedModulesIdRoute
+  '/partenaire/formations': typeof AuthenticatedPartenaireFormationsRoute
+  '/partenaire/offres': typeof AuthenticatedPartenaireOffresRoute
   '/formations/': typeof AuthenticatedFormationsIndexRoute
+  '/partenaire/': typeof AuthenticatedPartenaireIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -118,7 +149,10 @@ export interface FileRoutesByTo {
   '/profil': typeof AuthenticatedProfilRoute
   '/formations/$id': typeof AuthenticatedFormationsIdRoute
   '/modules/$id': typeof AuthenticatedModulesIdRoute
+  '/partenaire/formations': typeof AuthenticatedPartenaireFormationsRoute
+  '/partenaire/offres': typeof AuthenticatedPartenaireOffresRoute
   '/formations': typeof AuthenticatedFormationsIndexRoute
+  '/partenaire': typeof AuthenticatedPartenaireIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -131,10 +165,14 @@ export interface FileRoutesById {
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/paiements': typeof AuthenticatedPaiementsRoute
+  '/_authenticated/partenaire': typeof AuthenticatedPartenaireRouteWithChildren
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/formations/$id': typeof AuthenticatedFormationsIdRoute
   '/_authenticated/modules/$id': typeof AuthenticatedModulesIdRoute
+  '/_authenticated/partenaire/formations': typeof AuthenticatedPartenaireFormationsRoute
+  '/_authenticated/partenaire/offres': typeof AuthenticatedPartenaireOffresRoute
   '/_authenticated/formations/': typeof AuthenticatedFormationsIndexRoute
+  '/_authenticated/partenaire/': typeof AuthenticatedPartenaireIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -147,10 +185,14 @@ export interface FileRouteTypes {
     | '/messages'
     | '/notifications'
     | '/paiements'
+    | '/partenaire'
     | '/profil'
     | '/formations/$id'
     | '/modules/$id'
+    | '/partenaire/formations'
+    | '/partenaire/offres'
     | '/formations/'
+    | '/partenaire/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -164,7 +206,10 @@ export interface FileRouteTypes {
     | '/profil'
     | '/formations/$id'
     | '/modules/$id'
+    | '/partenaire/formations'
+    | '/partenaire/offres'
     | '/formations'
+    | '/partenaire'
   id:
     | '__root__'
     | '/'
@@ -176,10 +221,14 @@ export interface FileRouteTypes {
     | '/_authenticated/messages'
     | '/_authenticated/notifications'
     | '/_authenticated/paiements'
+    | '/_authenticated/partenaire'
     | '/_authenticated/profil'
     | '/_authenticated/formations/$id'
     | '/_authenticated/modules/$id'
+    | '/_authenticated/partenaire/formations'
+    | '/_authenticated/partenaire/offres'
     | '/_authenticated/formations/'
+    | '/_authenticated/partenaire/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -216,6 +265,13 @@ declare module '@tanstack/react-router' {
       path: '/profil'
       fullPath: '/profil'
       preLoaderRoute: typeof AuthenticatedProfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/partenaire': {
+      id: '/_authenticated/partenaire'
+      path: '/partenaire'
+      fullPath: '/partenaire'
+      preLoaderRoute: typeof AuthenticatedPartenaireRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/paiements': {
@@ -260,12 +316,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/partenaire/': {
+      id: '/_authenticated/partenaire/'
+      path: '/'
+      fullPath: '/partenaire/'
+      preLoaderRoute: typeof AuthenticatedPartenaireIndexRouteImport
+      parentRoute: typeof AuthenticatedPartenaireRoute
+    }
     '/_authenticated/formations/': {
       id: '/_authenticated/formations/'
       path: '/formations'
       fullPath: '/formations/'
       preLoaderRoute: typeof AuthenticatedFormationsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/partenaire/offres': {
+      id: '/_authenticated/partenaire/offres'
+      path: '/offres'
+      fullPath: '/partenaire/offres'
+      preLoaderRoute: typeof AuthenticatedPartenaireOffresRouteImport
+      parentRoute: typeof AuthenticatedPartenaireRoute
+    }
+    '/_authenticated/partenaire/formations': {
+      id: '/_authenticated/partenaire/formations'
+      path: '/formations'
+      fullPath: '/partenaire/formations'
+      preLoaderRoute: typeof AuthenticatedPartenaireFormationsRouteImport
+      parentRoute: typeof AuthenticatedPartenaireRoute
     }
     '/_authenticated/modules/$id': {
       id: '/_authenticated/modules/$id'
@@ -284,6 +361,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedPartenaireRouteChildren {
+  AuthenticatedPartenaireFormationsRoute: typeof AuthenticatedPartenaireFormationsRoute
+  AuthenticatedPartenaireOffresRoute: typeof AuthenticatedPartenaireOffresRoute
+  AuthenticatedPartenaireIndexRoute: typeof AuthenticatedPartenaireIndexRoute
+}
+
+const AuthenticatedPartenaireRouteChildren: AuthenticatedPartenaireRouteChildren =
+  {
+    AuthenticatedPartenaireFormationsRoute:
+      AuthenticatedPartenaireFormationsRoute,
+    AuthenticatedPartenaireOffresRoute: AuthenticatedPartenaireOffresRoute,
+    AuthenticatedPartenaireIndexRoute: AuthenticatedPartenaireIndexRoute,
+  }
+
+const AuthenticatedPartenaireRouteWithChildren =
+  AuthenticatedPartenaireRoute._addFileChildren(
+    AuthenticatedPartenaireRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedAffiliationRoute: typeof AuthenticatedAffiliationRoute
@@ -291,6 +387,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedPaiementsRoute: typeof AuthenticatedPaiementsRoute
+  AuthenticatedPartenaireRoute: typeof AuthenticatedPartenaireRouteWithChildren
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedFormationsIdRoute: typeof AuthenticatedFormationsIdRoute
   AuthenticatedModulesIdRoute: typeof AuthenticatedModulesIdRoute
@@ -304,6 +401,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedPaiementsRoute: AuthenticatedPaiementsRoute,
+  AuthenticatedPartenaireRoute: AuthenticatedPartenaireRouteWithChildren,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedFormationsIdRoute: AuthenticatedFormationsIdRoute,
   AuthenticatedModulesIdRoute: AuthenticatedModulesIdRoute,

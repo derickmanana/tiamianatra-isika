@@ -277,7 +277,9 @@ export type Database = {
           id: string
           is_active: boolean
           level: string | null
+          owner_partner_id: string | null
           price: number | null
+          status: string
           title: string
           updated_at: string
           youtube_url: string | null
@@ -291,7 +293,9 @@ export type Database = {
           id?: string
           is_active?: boolean
           level?: string | null
+          owner_partner_id?: string | null
           price?: number | null
+          status?: string
           title: string
           updated_at?: string
           youtube_url?: string | null
@@ -305,12 +309,22 @@ export type Database = {
           id?: string
           is_active?: boolean
           level?: string | null
+          owner_partner_id?: string | null
           price?: number | null
+          status?: string
           title?: string
           updated_at?: string
           youtube_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "formations_owner_partner_id_fkey"
+            columns: ["owner_partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       hero_slides: {
         Row: {
@@ -356,6 +370,97 @@ export type Database = {
           youtube_url?: string | null
         }
         Relationships: []
+      }
+      job_applications: {
+        Row: {
+          cover_letter: string | null
+          created_at: string
+          id: string
+          job_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cover_letter?: string | null
+          created_at?: string
+          id?: string
+          job_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cover_letter?: string | null
+          created_at?: string
+          id?: string
+          job_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "job_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_offers: {
+        Row: {
+          contract_type: string | null
+          created_at: string
+          description: string | null
+          id: string
+          location: string | null
+          partner_id: string
+          requires_cv: boolean
+          requires_portfolio: boolean
+          salary_range: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          contract_type?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: string | null
+          partner_id: string
+          requires_cv?: boolean
+          requires_portfolio?: boolean
+          salary_range?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          contract_type?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: string | null
+          partner_id?: string
+          requires_cv?: boolean
+          requires_portfolio?: boolean
+          salary_range?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_offers_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       learning_tracks: {
         Row: {
@@ -500,6 +605,54 @@ export type Database = {
           title?: string
           type?: Database["public"]["Enums"]["notification_type"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      partners: {
+        Row: {
+          bio: string | null
+          commission_rate: number
+          company: string | null
+          created_at: string
+          display_name: string
+          id: string
+          logo_url: string | null
+          partner_type: string
+          phone: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          bio?: string | null
+          commission_rate?: number
+          company?: string | null
+          created_at?: string
+          display_name: string
+          id?: string
+          logo_url?: string | null
+          partner_type: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          bio?: string | null
+          commission_rate?: number
+          company?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          logo_url?: string | null
+          partner_type?: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          website?: string | null
         }
         Relationships: []
       }
@@ -885,7 +1038,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "client"
+      app_role: "admin" | "client" | "formateur" | "recruteur"
       notification_type:
         | "payment_validated"
         | "payment_rejected"
@@ -1025,7 +1178,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "client"],
+      app_role: ["admin", "client", "formateur", "recruteur"],
       notification_type: [
         "payment_validated",
         "payment_rejected",
