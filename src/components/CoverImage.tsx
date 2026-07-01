@@ -7,6 +7,16 @@ import fallback from "@/assets/formation-business.jpg";
 
 type F = { title?: string | null; cover_url?: string | null; cover_type?: string | null; youtube_url?: string | null };
 
+/** In-memory cache of URLs known to fail so we don't retry them. */
+const brokenUrls = new Set<string>();
+
+function isSafeImageUrl(u: string | null | undefined): boolean {
+  if (!u) return false;
+  if (brokenUrls.has(u)) return false;
+  // Only http(s) or storage-path-like strings
+  return /^https?:\/\//i.test(u) || /^[a-zA-Z0-9_\-\/\.]+$/.test(u);
+}
+
 function CoverImageImpl({
   formation,
   alt,
@@ -18,22 +28,31 @@ function CoverImageImpl({
   alt: string;
   className?: string;
   videoOnHover?: boolean;
-  /** Force usage of a static thumbnail even when cover_type === "video". Recommended for grids. */
   preferStatic?: boolean;
 }) {
-  const [src, setSrc] = useState<string>(() => getFormationCover(formation));
+  const initial = getFormationCover(formation);
+  const [src, setSrc] = useState<string>(isSafeImageUrl(initial) ? initial : fallback);
   const [errored, setErrored] = useState(false);
 
   useEffect(() => {
     let active = true;
     setErrored(false);
-    resolveCoverUrl(formation).then((u) => { if (active && u) setSrc(u); });
+    resolveCoverUrl(formation).then((u) => {
+      if (!active) return;
+      if (u && isSafeImageUrl(u)) setSrc(u);
+      else setSrc(fallback);
+    }).catch(() => { if (active) setSrc(fallback); });
     return () => { active = false; };
   }, [formation.cover_url, formation.title]);
 
   const isVideo = formation.cover_type === "video" && !!formation.youtube_url;
 
-  // Grid mode: use YouTube static thumbnail instead of mounting an iframe per card.
+  const handleError = (url: string) => {
+    if (url) brokenUrls.add(url);
+    console.warn("[CoverImage] media error, using fallback:", url);
+    setErrored(true);
+  };
+
   if (isVideo && preferStatic) {
     const id = extractYouTubeId(formation.youtube_url!);
     const thumb = id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : src;
@@ -45,7 +64,7 @@ function CoverImageImpl({
         decoding="async"
         width={1280}
         height={720}
-        onError={() => setErrored(true)}
+        onError={() => handleError(thumb)}
         className={className}
       />
     );
@@ -59,7 +78,7 @@ function CoverImageImpl({
           alt={alt}
           loading="lazy"
           decoding="async"
-          onError={() => setErrored(true)}
+          onError={() => handleError(src)}
           className="absolute inset-0 w-full h-full object-cover opacity-40"
         />
         <YouTubeCover url={formation.youtube_url!} />
@@ -75,7 +94,7 @@ function CoverImageImpl({
       decoding="async"
       width={1280}
       height={720}
-      onError={() => setErrored(true)}
+      onError={() => handleError(src)}
       className={className}
     />
   );

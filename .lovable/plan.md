@@ -1,69 +1,102 @@
-# Refonte complète Accueil M'BossTsika — Plan
+# M'BossTsika — Correction urgente + Écosystème Emploi
 
-Cette refonte touche la base de données, l'admin, et l'accueil client. Vu l'ampleur, je propose de découper en **3 phases livrables** plutôt qu'un seul mega-commit (risqué et difficile à valider).
-
----
-
-## Phase 1 — Fondations base de données & couvertures vidéo
-
-### Nouvelles tables
-- `hero_slides` : type (text|image|video), title, body, media_url (image storage path), youtube_url, display_order, is_active
-- `schools` : name, logo_url, description, country, display_order, is_active
-- `learning_tracks` (types d'apprentissage) : code (`tsotra`|`certificat`|`diplome_equiv`|`diplome`), label, description, price_multiplier, is_active
-- `course_durations` : name (Normal/Accéléré/Journée/Soir/Weekend), description, duration_weeks, price_multiplier, is_active
-- `formation_enrollments` : user_id, formation_id, school_id, track_id, duration_id, status — trace le parcours utilisateur
-
-### Modifs colonnes
-- `formations` : ajouter `cover_type` ('image'|'video'), `youtube_url`, `price`, `level` (debutant|intermediaire|avance)
-- Bucket `hero-media` (privé) pour images d'annonces
-
-### Grants + RLS (admin write, authenticated read sur tables référentielles)
+Votre demande couvre **deux sujets très différents**. Je propose de traiter d'abord l'urgence (bugs d'affichage), puis de découper l'écosystème pro en phases livrables — un mega-lot unique serait risqué et long à valider.
 
 ---
 
-## Phase 2 — Interface Admin
+## PHASE 0 — URGENT : Suppression des couvertures auto & durcissement médias
 
-Onglets ajoutés dans `/admin` :
-- **Annonces Slider** : CRUD hero_slides + uploader image + champ YouTube + toggle actif + ordre
-- **Écoles** : CRUD + logo upload + pays
-- **Types d'apprentissage** : CRUD learning_tracks
-- **Durées** : CRUD course_durations
-- **Formations** (existant) : ajouter sélecteur Type couverture (Image/YouTube), champ URL YouTube, prix, niveau
+Cause identifiée des bandes colorées / lags : le fallback `getFormationCover` (src/lib/formation-covers.ts) associe automatiquement des images bundlées via regex sur le titre (Canva, Musique, Crypto, "gagner"…). Ces images sont chargées même quand l'admin n'en a pas défini. On supprime ce comportement.
 
----
+**Changements**
+- `src/lib/formation-covers.ts` : remplacer les mappings regex par UNE seule image par défaut neutre (`formation-business.jpg`).
+- `getFormationCover` retourne :
+  - `cover_url` si défini ET valide (http(s) ou chemin storage)
+  - sinon → image par défaut unique
+  - jamais d'image "devinée" à partir du titre
+- `CoverImage.tsx` : durcir la validation
+  - refuser toute URL non http(s) ou chemin storage
+  - `onError` déjà présent → étendre : logger dans `console.warn`, marquer l'image comme "corrompue" en cache mémoire (Set) pour ne plus la retenter
+  - garder `preferStatic` pour vidéos (thumbnail YouTube)
+- `HeroSlider.tsx` : idem — image manquante = slide texte only
+- Aucune génération auto, aucun appel imagegen côté runtime.
 
-## Phase 3 — Refonte Accueil + parcours inscription
-
-### Accueil (`src/routes/index.tsx`)
-- **Hero Slider premium** : embla-carousel, autoplay 5s, dots, prev/next, glassmorphism, supporte texte/image/vidéo YouTube (lecture muet+loop via `youtube.com/embed?autoplay=1&mute=1&loop=1`)
-- **Barre de recherche** : filtre instantané (titre + école + catégorie)
-- **Sections** :
-  - 🔥 Formations populaires (par nb inscriptions)
-  - ⭐ Recommandées
-  - 🎓 Nouvelles
-  - 🏆 Meilleurs étudiants (top badges)
-  - 📜 Derniers certificats
-  - 📢 Annonces récentes
-- **Carte formation premium** : cover image OU iframe YouTube, hover scale Netflix-style, badge Premium, prix, modules, niveau, bouton **🎓 Hianatra**
-
-### Modal Hianatra (4 étapes)
-1. Choix track (Tsotra / Certificat / Diplôme équiv / Diplôme)
-2. Choix école
-3. Choix durée
-4. Récap → crée `formation_enrollments` → redirige vers `/formations/$id` (modules + paiement existant)
-
-### Design
-Palette nuit (bleu nuit/noir/violet/or) déjà partiellement présente — renforcer via tokens `--gradient-hero`, `--gold`. Animations fade-in / hover-scale / skeleton.
+**Résultat** : plus aucune couverture "IA/auto". L'admin doit uploader ou fournir une URL. Fallback = 1 image neutre stable.
 
 ---
 
-## Technique
-- `src/components/HeroSlider.tsx`, `SearchBar.tsx`, `FormationCard.tsx`, `HianatraDialog.tsx`, `YouTubeCover.tsx`
-- `src/lib/youtube.ts` : extract video ID (déjà existant — étendre)
-- Admin tabs : `AnnouncementsTab.tsx`, `SchoolsTab.tsx`, `TracksTab.tsx`, `DurationsTab.tsx`
-- Server fns : `hero.functions.ts`, `schools.functions.ts`, `enrollment.functions.ts`
+## PHASE 1 — Espace Partenaires (Formateur / Recruteur)
+
+### Base de données
+- Enum `partner_type` : `formateur | recruteur`
+- Table `partners` : user_id, type, display_name, bio, logo_url, status (`pending|approved|rejected|suspended`), commission_rate
+- Ajout rôle `partner` à `app_role` + `has_role` déjà en place
+- `formations.owner_partner_id` (nullable) + `formations.status` (`draft|pending|approved|rejected`)
+- Modules/vidéos : hérite du statut de la formation parente
+- RLS : partenaire écrit ses propres formations en `pending`, admin approuve
+
+### UI
+- Route `/_authenticated/partenaire/` (layout)
+  - `partenaire.index.tsx` : dashboard
+  - `partenaire.formations.tsx` : CRUD formations en attente
+  - `partenaire.offres.tsx` : (recruteur) offres d'emploi
+- Sélecteur rôle à l'inscription : Étudiant / Formateur / Recruteur → crée `partners` en `pending`
+- Onglet Admin "Partenaires" : approuver/refuser/suspendre
 
 ---
 
-## Question
-Voulez-vous que je démarre par la **Phase 1 (migration DB)** maintenant ? Une fois approuvée, j'enchaîne Phase 2 puis Phase 3 dans les tours suivants. Ou préférez-vous tout en un seul gros lot (plus long, plus risqué) ?
+## PHASE 2 — Profil professionnel Étudiant (CV / Portfolio)
+
+### DB
+- `profiles` : `headline`, `bio`, `phone`, `location`, `avatar_url` (existant?), `cv_url`, `portfolio_url`, `social_links` (jsonb), `is_complete` (bool calculé)
+- Tables `experiences`, `skills`, `education` (liées à user_id)
+
+### UI
+- Page `/_authenticated/profil` refonte : sections CV, Expériences, Compétences, Formations, Portfolio, Réseaux sociaux
+- Badge "Profil complet" quand tous les champs requis sont remplis
+
+---
+
+## PHASE 3 — Espace Emploi
+
+### DB
+- `job_offers` : recruiter_id, title, description, requirements (jsonb : cv/portfolio/certificat/diplôme), location, salary_range, status
+- `job_applications` : user_id, job_id, cover_letter, status (`submitted|reviewing|interview|accepted|rejected`)
+- `job_assessments` (QCM/écrit/cas pratique) + `assessment_responses` avec chronomètre
+- RLS complètes
+
+### UI
+- `/_authenticated/emploi.index.tsx` : liste offres + filtres
+- `/_authenticated/emploi.$id.tsx` : détail + bouton Postuler (gate : profil complet + CV + portfolio si exigé)
+- `/_authenticated/mes-candidatures.tsx` : suivi
+- Recruteur : `/partenaire/offres` CRUD + `partenaire/candidatures.$jobId` + éditeur QCM
+
+---
+
+## PHASE 4 — Refonte Accueil style Coursera/Udemy + Messagerie enrichie
+
+- Slider annonces (déjà en place — polish)
+- Sections : Formations populaires, Nouveautés, **Emplois récents**, Meilleurs étudiants, Certificats récents
+- Messagerie : ajouter canaux Admin↔Partenaire, Client↔Recruteur, Client↔Formateur (extension du système `messages` existant avec `thread_type`)
+- Notifications temps réel via Supabase Realtime sur `notifications`
+- Optimisation : `React.memo` sur toutes les cartes (déjà en cours), lazy routes, `IntersectionObserver` déjà présent pour YouTube
+
+---
+
+## Détails techniques transverses
+
+- **Aucun upload direct de vidéo** : uniquement URL YouTube (déjà en place) — étendre aux offres/portfolio
+- **Validation médias** : util `isSafeImageUrl(url)` + fallback systématique
+- **Lazy loading** : `loading="lazy"` + `decoding="async"` partout (déjà appliqué sur `CoverImage`)
+- **Compatibilité Android WebView** : bannir `backdrop-filter` (déjà fait), éviter `filter: drop-shadow` sur listes, préférer `text-shadow`
+
+---
+
+## Ma recommandation
+
+**Je démarre par PHASE 0 immédiatement** (30 min, corrige les bugs graphiques signalés). Puis vous validez chaque phase avant que je passe à la suivante.
+
+Voulez-vous que je :
+1. **Lance Phase 0 maintenant** (correction urgente couvertures), puis on discute les phases suivantes ?
+2. Enchaîne Phase 0 + Phase 1 (Partenaires) dans la foulée ?
+3. Autre priorité (Emploi d'abord ? Profil pro d'abord ?)
