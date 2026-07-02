@@ -954,6 +954,7 @@ function PartnersAdminTab() {
   const { data: partners } = useQuery({
     queryKey: ["admin-partners"],
     queryFn: async () => (await supabase.from("partners").select("*, profiles:user_id(full_name, email)").order("created_at", { ascending: false })).data ?? [],
+    refetchInterval: 15000,
   });
   const { data: pendingForms } = useQuery({
     queryKey: ["admin-pending-formations"],
@@ -971,27 +972,97 @@ function PartnersAdminTab() {
     qc.invalidateQueries();
   };
 
+  const all = partners ?? [];
+  const pendingFormateurs = all.filter((p: any) => p.partner_type === "formateur" && p.status === "pending");
+  const pendingRecruteurs = all.filter((p: any) => p.partner_type === "recruteur" && p.status === "pending");
+  const otherPartners = all.filter((p: any) => p.status !== "pending");
+
+  const renderPartner = (p: any) => (
+    <div key={p.id} className="p-3 border rounded-lg flex items-center justify-between gap-2 flex-wrap bg-card">
+      <div className="min-w-0">
+        <div className="font-semibold flex items-center gap-2 flex-wrap">
+          {p.display_name}
+          <Badge variant={p.partner_type === "formateur" ? "default" : "secondary"}>
+            {p.partner_type === "formateur" ? "Formateur" : "Recruteur"}
+          </Badge>
+          <Badge variant={p.status === "approved" ? "default" : p.status === "pending" ? "outline" : "destructive"}>
+            {p.status}
+          </Badge>
+        </div>
+        <div className="text-xs text-muted-foreground">
+          {p.profiles?.full_name ? `${p.profiles.full_name} · ` : ""}{p.profiles?.email} {p.company ? `· ${p.company}` : ""}
+        </div>
+        {p.bio && <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{p.bio}</div>}
+      </div>
+      <div className="flex gap-1 flex-wrap">
+        <Button size="sm" onClick={() => setStatus("partners", p.id, "approved")}>Approuver</Button>
+        <Button size="sm" variant="outline" onClick={() => setStatus("partners", p.id, "rejected")}>Refuser</Button>
+        <Button size="sm" variant="outline" onClick={() => setStatus("partners", p.id, "suspended")}>Suspendre</Button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader><CardTitle>Demandes partenaires</CardTitle></CardHeader>
-        <CardContent className="space-y-2">
-          {(partners ?? []).map((p: any) => (
-            <div key={p.id} className="p-3 border rounded flex items-center justify-between gap-2 flex-wrap">
-              <div className="min-w-0">
-                <div className="font-medium">{p.display_name} <Badge>{p.partner_type}</Badge> <Badge variant="outline">{p.status}</Badge></div>
-                <div className="text-xs text-muted-foreground">{p.profiles?.email} · {p.company ?? ""}</div>
-              </div>
-              <div className="flex gap-1">
-                <Button size="sm" variant="outline" onClick={() => setStatus("partners", p.id, "approved")}>Approuver</Button>
-                <Button size="sm" variant="outline" onClick={() => setStatus("partners", p.id, "rejected")}>Refuser</Button>
-                <Button size="sm" variant="outline" onClick={() => setStatus("partners", p.id, "suspended")}>Suspendre</Button>
-              </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Card className="border-primary/40">
+          <CardContent className="py-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs text-muted-foreground">Demandes Formateur en attente</p>
+              <p className="text-3xl font-bold text-primary">{pendingFormateurs.length}</p>
             </div>
-          ))}
-          {(!partners || partners.length === 0) && <p className="text-sm text-muted-foreground">Aucune demande.</p>}
+            <Badge variant={pendingFormateurs.length > 0 ? "default" : "outline"}>
+              {pendingFormateurs.length > 0 ? "Action requise" : "À jour"}
+            </Badge>
+          </CardContent>
+        </Card>
+        <Card className="border-primary/40">
+          <CardContent className="py-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs text-muted-foreground">Demandes Recruteur en attente</p>
+              <p className="text-3xl font-bold text-primary">{pendingRecruteurs.length}</p>
+            </div>
+            <Badge variant={pendingRecruteurs.length > 0 ? "default" : "outline"}>
+              {pendingRecruteurs.length > 0 ? "Action requise" : "À jour"}
+            </Badge>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            🎓 Demandes Formateurs
+            {pendingFormateurs.length > 0 && <Badge>{pendingFormateurs.length}</Badge>}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {pendingFormateurs.map(renderPartner)}
+          {pendingFormateurs.length === 0 && <p className="text-sm text-muted-foreground">Aucune demande Formateur en attente.</p>}
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            💼 Demandes Recruteurs
+            {pendingRecruteurs.length > 0 && <Badge>{pendingRecruteurs.length}</Badge>}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {pendingRecruteurs.map(renderPartner)}
+          {pendingRecruteurs.length === 0 && <p className="text-sm text-muted-foreground">Aucune demande Recruteur en attente.</p>}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle>Partenaires traités</CardTitle></CardHeader>
+        <CardContent className="space-y-2">
+          {otherPartners.map(renderPartner)}
+          {otherPartners.length === 0 && <p className="text-sm text-muted-foreground">Aucun partenaire traité.</p>}
+        </CardContent>
+      </Card>
+
 
       <Card>
         <CardHeader><CardTitle>Formations en attente</CardTitle></CardHeader>
