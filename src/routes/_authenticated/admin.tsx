@@ -25,6 +25,18 @@ export const Route = createFileRoute("/_authenticated/admin")({ component: Admin
 function AdminPage() {
   const { t } = useTranslation();
   const { isAdmin, loading } = useAuth();
+  const { data: pendingPartnersCount = 0 } = useQuery({
+    queryKey: ["admin-partners-pending-count"],
+    enabled: isAdmin,
+    refetchInterval: 15000,
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("partners")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending");
+      return count ?? 0;
+    },
+  });
   if (loading) return <ClientLayout><p className="text-muted-foreground">…</p></ClientLayout>;
   if (!isAdmin) return <ClientLayout><p className="text-destructive">Accès refusé</p></ClientLayout>;
 
@@ -32,7 +44,15 @@ function AdminPage() {
     <ClientLayout>
       <BackButton />
       <h1 className="text-2xl font-bold mb-4">{t("admin.dashboard")}</h1>
-      <Tabs defaultValue="dashboard">
+      {pendingPartnersCount > 0 && (
+        <div className="mb-4 p-3 rounded-lg border border-primary/50 bg-primary/10 flex items-center justify-between gap-3 flex-wrap">
+          <div className="text-sm">
+            <b>{pendingPartnersCount}</b> nouvelle{pendingPartnersCount > 1 ? "s" : ""} demande{pendingPartnersCount > 1 ? "s" : ""} d'inscription (Formateur / Recruteur) en attente de validation.
+          </div>
+          <Badge>Onglet Partenaires</Badge>
+        </div>
+      )}
+      <Tabs defaultValue={pendingPartnersCount > 0 ? "partners" : "dashboard"}>
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="dashboard">{t("admin.dashboard")}</TabsTrigger>
           <TabsTrigger value="payments">{t("admin.payments_mgmt")}</TabsTrigger>
@@ -48,8 +68,16 @@ function AdminPage() {
           <TabsTrigger value="settings">{t("admin.payment_settings")}</TabsTrigger>
           <TabsTrigger value="api">Paramètres API</TabsTrigger>
           <TabsTrigger value="email">Paramètres Email</TabsTrigger>
-          <TabsTrigger value="partners">Partenaires</TabsTrigger>
+          <TabsTrigger value="partners">
+            Partenaires
+            {pendingPartnersCount > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold">
+                {pendingPartnersCount}
+              </span>
+            )}
+          </TabsTrigger>
         </TabsList>
+
         <TabsContent value="dashboard"><DashboardTab /></TabsContent>
         <TabsContent value="payments"><PaymentsTab /></TabsContent>
         <TabsContent value="formations"><FormationsAdminTab /></TabsContent>
