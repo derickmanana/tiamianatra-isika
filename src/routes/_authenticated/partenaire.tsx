@@ -2,7 +2,8 @@ import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-r
 import { ClientLayout } from "@/components/ClientLayout";
 import { usePartner } from "@/hooks/use-partner";
 import { PartnerOnboarding } from "@/components/partner/PartnerOnboarding";
-import { LayoutDashboard, GraduationCap, Briefcase } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Briefcase, School, Layers, Clock, MessageSquare, BookOpen } from "lucide-react";
+
 
 export const Route = createFileRoute("/_authenticated/partenaire")({
   component: PartnerLayout,
