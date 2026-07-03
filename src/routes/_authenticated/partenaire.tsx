@@ -2,7 +2,8 @@ import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-r
 import { ClientLayout } from "@/components/ClientLayout";
 import { usePartner } from "@/hooks/use-partner";
 import { PartnerOnboarding } from "@/components/partner/PartnerOnboarding";
-import { LayoutDashboard, GraduationCap, Briefcase } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Briefcase, School, Layers, Clock, MessageSquare, BookOpen } from "lucide-react";
+
 
 export const Route = createFileRoute("/_authenticated/partenaire")({
   component: PartnerLayout,
@@ -46,12 +47,22 @@ function PartnerLayout() {
     );
   }
 
-  const tabs = [
-    { to: "/partenaire", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
-    partner.partner_type === "formateur"
-      ? { to: "/partenaire/formations", label: "Mes formations", icon: GraduationCap, exact: false }
-      : { to: "/partenaire/offres", label: "Mes offres", icon: Briefcase, exact: false },
-  ];
+  const tabs = partner.partner_type === "formateur"
+    ? [
+        { to: "/partenaire", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
+        { to: "/partenaire/formations", label: "Mes formations", icon: GraduationCap, exact: false },
+        { to: "/partenaire/modules", label: "Mes modules", icon: BookOpen, exact: false },
+        { to: "/partenaire/ecoles", label: "Écoles", icon: School, exact: false },
+        { to: "/partenaire/tracks", label: "Types apprentissage", icon: Layers, exact: false },
+        { to: "/partenaire/durees", label: "Durées", icon: Clock, exact: false },
+        { to: "/partenaire/messages", label: "Messages", icon: MessageSquare, exact: false },
+      ]
+    : [
+        { to: "/partenaire", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
+        { to: "/partenaire/offres", label: "Mes offres", icon: Briefcase, exact: false },
+        { to: "/partenaire/messages", label: "Messages", icon: MessageSquare, exact: false },
+      ];
+
 
   return (
     <ClientLayout>

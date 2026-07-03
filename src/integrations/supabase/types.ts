@@ -269,48 +269,66 @@ export type Database = {
       }
       formations: {
         Row: {
+          category: string | null
+          certificate_type: string | null
           cover_type: string
           cover_url: string | null
           created_at: string
           description: string | null
           display_order: number
+          duration_id: string | null
           id: string
           is_active: boolean
+          learning_track_id: string | null
           level: string | null
           owner_partner_id: string | null
           price: number | null
+          school_id: string | null
+          specialization: string | null
           status: string
           title: string
           updated_at: string
           youtube_url: string | null
         }
         Insert: {
+          category?: string | null
+          certificate_type?: string | null
           cover_type?: string
           cover_url?: string | null
           created_at?: string
           description?: string | null
           display_order?: number
+          duration_id?: string | null
           id?: string
           is_active?: boolean
+          learning_track_id?: string | null
           level?: string | null
           owner_partner_id?: string | null
           price?: number | null
+          school_id?: string | null
+          specialization?: string | null
           status?: string
           title: string
           updated_at?: string
           youtube_url?: string | null
         }
         Update: {
+          category?: string | null
+          certificate_type?: string | null
           cover_type?: string
           cover_url?: string | null
           created_at?: string
           description?: string | null
           display_order?: number
+          duration_id?: string | null
           id?: string
           is_active?: boolean
+          learning_track_id?: string | null
           level?: string | null
           owner_partner_id?: string | null
           price?: number | null
+          school_id?: string | null
+          specialization?: string | null
           status?: string
           title?: string
           updated_at?: string
@@ -318,10 +336,31 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "formations_duration_id_fkey"
+            columns: ["duration_id"]
+            isOneToOne: false
+            referencedRelation: "course_durations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "formations_learning_track_id_fkey"
+            columns: ["learning_track_id"]
+            isOneToOne: false
+            referencedRelation: "learning_tracks"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "formations_owner_partner_id_fkey"
             columns: ["owner_partner_id"]
             isOneToOne: false
             referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "formations_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
             referencedColumns: ["id"]
           },
         ]
@@ -539,6 +578,7 @@ export type Database = {
           formation_id: string
           id: string
           is_available: boolean
+          is_free_intro: boolean
           price_ariary: number
           title: string
           unavailable_message: string | null
@@ -551,6 +591,7 @@ export type Database = {
           formation_id: string
           id?: string
           is_available?: boolean
+          is_free_intro?: boolean
           price_ariary?: number
           title: string
           unavailable_message?: string | null
@@ -563,6 +604,7 @@ export type Database = {
           formation_id?: string
           id?: string
           is_available?: boolean
+          is_free_intro?: boolean
           price_ariary?: number
           title?: string
           unavailable_message?: string | null
