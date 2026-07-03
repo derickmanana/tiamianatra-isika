@@ -25,6 +25,7 @@ import { Route as AuthenticatedFormationsIndexRouteImport } from './routes/_auth
 import { Route as AuthenticatedPartenaireOffresRouteImport } from './routes/_authenticated/partenaire.offres'
 import { Route as AuthenticatedPartenaireModulesRouteImport } from './routes/_authenticated/partenaire.modules'
 import { Route as AuthenticatedPartenaireFormationsRouteImport } from './routes/_authenticated/partenaire.formations'
+import { Route as AuthenticatedPartenaireEcolesRouteImport } from './routes/_authenticated/partenaire.ecoles'
 import { Route as AuthenticatedModulesIdRouteImport } from './routes/_authenticated/modules.$id'
 import { Route as AuthenticatedFormationsIdRouteImport } from './routes/_authenticated/formations.$id'
 
@@ -114,6 +115,12 @@ const AuthenticatedPartenaireFormationsRoute =
     path: '/formations',
     getParentRoute: () => AuthenticatedPartenaireRoute,
   } as any)
+const AuthenticatedPartenaireEcolesRoute =
+  AuthenticatedPartenaireEcolesRouteImport.update({
+    id: '/ecoles',
+    path: '/ecoles',
+    getParentRoute: () => AuthenticatedPartenaireRoute,
+  } as any)
 const AuthenticatedModulesIdRoute = AuthenticatedModulesIdRouteImport.update({
   id: '/modules/$id',
   path: '/modules/$id',
@@ -139,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/profil': typeof AuthenticatedProfilRoute
   '/formations/$id': typeof AuthenticatedFormationsIdRoute
   '/modules/$id': typeof AuthenticatedModulesIdRoute
+  '/partenaire/ecoles': typeof AuthenticatedPartenaireEcolesRoute
   '/partenaire/formations': typeof AuthenticatedPartenaireFormationsRoute
   '/partenaire/modules': typeof AuthenticatedPartenaireModulesRoute
   '/partenaire/offres': typeof AuthenticatedPartenaireOffresRoute
@@ -157,6 +165,7 @@ export interface FileRoutesByTo {
   '/profil': typeof AuthenticatedProfilRoute
   '/formations/$id': typeof AuthenticatedFormationsIdRoute
   '/modules/$id': typeof AuthenticatedModulesIdRoute
+  '/partenaire/ecoles': typeof AuthenticatedPartenaireEcolesRoute
   '/partenaire/formations': typeof AuthenticatedPartenaireFormationsRoute
   '/partenaire/modules': typeof AuthenticatedPartenaireModulesRoute
   '/partenaire/offres': typeof AuthenticatedPartenaireOffresRoute
@@ -178,6 +187,7 @@ export interface FileRoutesById {
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/formations/$id': typeof AuthenticatedFormationsIdRoute
   '/_authenticated/modules/$id': typeof AuthenticatedModulesIdRoute
+  '/_authenticated/partenaire/ecoles': typeof AuthenticatedPartenaireEcolesRoute
   '/_authenticated/partenaire/formations': typeof AuthenticatedPartenaireFormationsRoute
   '/_authenticated/partenaire/modules': typeof AuthenticatedPartenaireModulesRoute
   '/_authenticated/partenaire/offres': typeof AuthenticatedPartenaireOffresRoute
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/profil'
     | '/formations/$id'
     | '/modules/$id'
+    | '/partenaire/ecoles'
     | '/partenaire/formations'
     | '/partenaire/modules'
     | '/partenaire/offres'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/profil'
     | '/formations/$id'
     | '/modules/$id'
+    | '/partenaire/ecoles'
     | '/partenaire/formations'
     | '/partenaire/modules'
     | '/partenaire/offres'
@@ -237,6 +249,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profil'
     | '/_authenticated/formations/$id'
     | '/_authenticated/modules/$id'
+    | '/_authenticated/partenaire/ecoles'
     | '/_authenticated/partenaire/formations'
     | '/_authenticated/partenaire/modules'
     | '/_authenticated/partenaire/offres'
@@ -364,6 +377,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPartenaireFormationsRouteImport
       parentRoute: typeof AuthenticatedPartenaireRoute
     }
+    '/_authenticated/partenaire/ecoles': {
+      id: '/_authenticated/partenaire/ecoles'
+      path: '/ecoles'
+      fullPath: '/partenaire/ecoles'
+      preLoaderRoute: typeof AuthenticatedPartenaireEcolesRouteImport
+      parentRoute: typeof AuthenticatedPartenaireRoute
+    }
     '/_authenticated/modules/$id': {
       id: '/_authenticated/modules/$id'
       path: '/modules/$id'
@@ -382,6 +402,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedPartenaireRouteChildren {
+  AuthenticatedPartenaireEcolesRoute: typeof AuthenticatedPartenaireEcolesRoute
   AuthenticatedPartenaireFormationsRoute: typeof AuthenticatedPartenaireFormationsRoute
   AuthenticatedPartenaireModulesRoute: typeof AuthenticatedPartenaireModulesRoute
   AuthenticatedPartenaireOffresRoute: typeof AuthenticatedPartenaireOffresRoute
@@ -390,6 +411,7 @@ interface AuthenticatedPartenaireRouteChildren {
 
 const AuthenticatedPartenaireRouteChildren: AuthenticatedPartenaireRouteChildren =
   {
+    AuthenticatedPartenaireEcolesRoute: AuthenticatedPartenaireEcolesRoute,
     AuthenticatedPartenaireFormationsRoute:
       AuthenticatedPartenaireFormationsRoute,
     AuthenticatedPartenaireModulesRoute: AuthenticatedPartenaireModulesRoute,
