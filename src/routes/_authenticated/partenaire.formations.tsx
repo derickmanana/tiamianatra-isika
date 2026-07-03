@@ -183,15 +183,12 @@ function PartnerFormations() {
 
   const remove = async (id: string) => {
     if (!confirm("Supprimer cette formation ? Ses modules seront également supprimés.")) return;
-    // Delete children first because Module 1 is protected against direct delete via trigger.
-    // Cascade doesn't fire our trigger; we work around by clearing is_free_intro then delete formation cascades via modules FK.
-    // Simpler: unset is_free_intro to allow delete
-    await supabase.from("modules").update({ is_free_intro: false, display_order: 99 }).eq("formation_id", id).eq("display_order", 1);
     const { error } = await supabase.from("formations").delete().eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Formation supprimée");
     qc.invalidateQueries({ queryKey: ["partner-formations"] });
   };
+
 
   return (
     <div>
