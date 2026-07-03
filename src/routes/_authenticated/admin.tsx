@@ -1020,7 +1020,11 @@ function PartnersAdminTab() {
         <div className="text-xs text-muted-foreground">
           {p.profiles?.full_name ? `${p.profiles.full_name} · ` : ""}{p.profiles?.email} {p.company ? `· ${p.company}` : ""}
         </div>
+        <div className="text-[11px] text-muted-foreground mt-0.5">
+          Inscrit le {new Date(p.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })}
+        </div>
         {p.bio && <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{p.bio}</div>}
+
       </div>
       <div className="flex gap-1 flex-wrap">
         <Button size="sm" onClick={() => setStatus("partners", p.id, "approved")}>Approuver</Button>
