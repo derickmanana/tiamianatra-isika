@@ -72,18 +72,18 @@ function AuthPage() {
         user_id: data.user.id,
         partner_type: role,
         display_name: fullName || email.split("@")[0],
-        status: "pending",
+        status: "approved",
       });
       if (pErr) console.warn("Partner insert error:", pErr.message);
     }
 
     setLoading(false);
-    toast.success(t("auth.signup_success"));
+    toast.success("Inscription réussie ! Un email de confirmation vous a été envoyé.");
 
-    if (role === "etudiant") {
-      navigate({ to: "/" });
-    } else {
-      navigate({ to: "/partenaire" });
+    // Si session immédiate (auto-confirm activé), rediriger. Sinon rester sur /auth avec message.
+    if (data.session) {
+      if (role === "etudiant") navigate({ to: "/" });
+      else navigate({ to: "/partenaire" });
     }
   };
 

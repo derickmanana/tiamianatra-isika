@@ -29,18 +29,15 @@ function PartnerLayout() {
     );
   }
 
-  if (partner.status !== "approved") {
+  if (partner.status === "suspended" || partner.status === "rejected") {
     return (
       <ClientLayout>
         <div className="max-w-2xl mx-auto p-6 rounded-lg border bg-card">
           <h1 className="text-2xl font-bold mb-2">Espace Partenaire</h1>
           <p className="text-muted-foreground mb-4">
-            Statut de votre compte : <span className="font-semibold uppercase">{partner.status}</span>
+            Statut : <span className="font-semibold uppercase">{partner.status}</span>
           </p>
-          {partner.status === "pending" && (
-            <p>Votre demande est en cours d'examen par l'administrateur. Vous recevrez une notification dès validation.</p>
-          )}
-          {partner.status === "rejected" && <p>Votre demande a été refusée. Contactez l'administrateur.</p>}
+          {partner.status === "rejected" && <p>Votre compte a été refusé. Contactez l'administrateur.</p>}
           {partner.status === "suspended" && <p>Votre compte est suspendu.</p>}
         </div>
       </ClientLayout>

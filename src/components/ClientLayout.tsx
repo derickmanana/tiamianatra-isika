@@ -14,9 +14,19 @@ import { toast } from "sonner";
 
 export function ClientLayout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
   const { partner } = usePartner();
+  const emailUnconfirmed = !!user && !user.email_confirmed_at;
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  const resendConfirmation = async () => {
+    if (!user?.email) return;
+    const { error } = await supabase.auth.resend({ type: "signup", email: user.email });
+    if (error) toast.error(error.message);
+    else toast.success("Email de confirmation renvoyé");
+  };
+
+
 
   const items = [
     { to: "/", label: t("nav.home"), icon: Home },
@@ -88,6 +98,17 @@ export function ClientLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
+
+      {emailUnconfirmed && (
+        <div className="bg-amber-500/15 border-b border-amber-500/40 text-amber-900 dark:text-amber-200 text-sm">
+          <div className="container mx-auto px-4 py-2 flex items-center justify-between gap-3">
+            <span>⚠️ Veuillez confirmer votre email pour débloquer l'accès complet.</span>
+            <button onClick={resendConfirmation} className="underline font-medium whitespace-nowrap">
+              Renvoyer l'email
+            </button>
+          </div>
+        </div>
+      )}
 
       <main className="flex-1 container mx-auto px-4 py-6 pb-24 lg:pb-6">{children}</main>
 
