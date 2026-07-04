@@ -25,7 +25,8 @@ export function ClientLayout({ children }: { children: ReactNode }) {
     if (error) toast.error(error.message);
     else toast.success("Email de confirmation renvoyé");
   };
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+
 
   const items = [
     { to: "/", label: t("nav.home"), icon: Home },
