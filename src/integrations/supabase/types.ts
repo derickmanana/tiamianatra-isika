@@ -271,12 +271,14 @@ export type Database = {
         Row: {
           category: string | null
           certificate_type: string | null
+          certificate_types: string[]
           cover_type: string
           cover_url: string | null
           created_at: string
           description: string | null
           display_order: number
           duration_id: string | null
+          duration_text: string | null
           id: string
           is_active: boolean
           learning_track_id: string | null
@@ -293,12 +295,14 @@ export type Database = {
         Insert: {
           category?: string | null
           certificate_type?: string | null
+          certificate_types?: string[]
           cover_type?: string
           cover_url?: string | null
           created_at?: string
           description?: string | null
           display_order?: number
           duration_id?: string | null
+          duration_text?: string | null
           id?: string
           is_active?: boolean
           learning_track_id?: string | null
@@ -315,12 +319,14 @@ export type Database = {
         Update: {
           category?: string | null
           certificate_type?: string | null
+          certificate_types?: string[]
           cover_type?: string
           cover_url?: string | null
           created_at?: string
           description?: string | null
           display_order?: number
           duration_id?: string | null
+          duration_text?: string | null
           id?: string
           is_active?: boolean
           learning_track_id?: string | null
@@ -854,39 +860,74 @@ export type Database = {
       }
       schools: {
         Row: {
+          address: string | null
+          city: string | null
           country: string | null
+          cover_url: string | null
           created_at: string
           description: string | null
           display_order: number
+          email: string | null
           id: string
           is_active: boolean
           logo_url: string | null
           name: string
+          owner_partner_id: string | null
+          phone: string | null
+          social_links: Json
+          status: string
           updated_at: string
+          website: string | null
         }
         Insert: {
+          address?: string | null
+          city?: string | null
           country?: string | null
+          cover_url?: string | null
           created_at?: string
           description?: string | null
           display_order?: number
+          email?: string | null
           id?: string
           is_active?: boolean
           logo_url?: string | null
           name: string
+          owner_partner_id?: string | null
+          phone?: string | null
+          social_links?: Json
+          status?: string
           updated_at?: string
+          website?: string | null
         }
         Update: {
+          address?: string | null
+          city?: string | null
           country?: string | null
+          cover_url?: string | null
           created_at?: string
           description?: string | null
           display_order?: number
+          email?: string | null
           id?: string
           is_active?: boolean
           logo_url?: string | null
           name?: string
+          owner_partner_id?: string | null
+          phone?: string | null
+          social_links?: Json
+          status?: string
           updated_at?: string
+          website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "schools_owner_partner_id_fkey"
+            columns: ["owner_partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       settings: {
         Row: {
