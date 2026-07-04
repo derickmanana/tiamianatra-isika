@@ -49,9 +49,7 @@ function PartnerLayout() {
         { to: "/partenaire", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
         { to: "/partenaire/formations", label: "Mes formations", icon: GraduationCap, exact: false },
         { to: "/partenaire/modules", label: "Mes modules", icon: BookOpen, exact: false },
-        { to: "/partenaire/ecoles", label: "Écoles", icon: School, exact: false },
-        { to: "/partenaire/tracks", label: "Types apprentissage", icon: Layers, exact: false },
-        { to: "/partenaire/durees", label: "Durées", icon: Clock, exact: false },
+        { to: "/partenaire/ecoles", label: "Mon école", icon: School, exact: false },
         { to: "/partenaire/messages", label: "Messages", icon: MessageSquare, exact: false },
       ]
     : [
