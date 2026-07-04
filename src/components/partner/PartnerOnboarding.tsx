@@ -32,7 +32,7 @@ export function PartnerOnboarding({ onCreated }: { onCreated: () => void }) {
       bio: bio.trim() || null,
       phone: phone.trim() || null,
       website: website.trim() || null,
-      status: "pending",
+      status: "approved",
     });
     setLoading(false);
     if (error) {
