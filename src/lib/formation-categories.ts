@@ -56,8 +56,9 @@ export const FORMATION_CATEGORIES: string[] = [
 ];
 
 export const CERTIFICATE_TYPES = [
-  { value: "attestation", label: "Attestation de participation" },
-  { value: "certificat", label: "Certificat de compétence" },
+  { value: "formation_simple", label: "Formation simple" },
+  { value: "certificat_national", label: "Certificat National" },
+  { value: "certificat_international", label: "Certificat International" },
+  { value: "equivalence_diplome", label: "Équivalence Diplôme" },
   { value: "diplome", label: "Diplôme" },
-  { value: "aucun", label: "Aucun" },
 ];
