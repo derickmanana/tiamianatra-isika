@@ -156,7 +156,7 @@ function PartnerFormations() {
       }
     }
 
-    toast.success(editing.id ? "Formation mise à jour" : "Formation créée — Module 1 gratuit ajouté (en attente de validation)");
+    toast.success(editing.id ? "Formation mise à jour" : "Formation publiée — Module 1 gratuit ajouté");
     setOpen(false);
     setEditing(null);
     qc.invalidateQueries({ queryKey: ["partner-formations"] });
