@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Sparkles, LogIn, Search, Flame, Star, Trophy, ScrollText, Megaphone, GraduationCap } from "lucide-react";
+import { Sparkles, LogIn, Search, Flame, Star, Trophy, ScrollText, Megaphone, GraduationCap, LayoutGrid } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { ClientLayout } from "@/components/ClientLayout";
@@ -12,6 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HeroSlider } from "@/components/HeroSlider";
 import { FormationCard } from "@/components/FormationCard";
+import { FORMATION_CATEGORIES } from "@/lib/formation-categories";
+import defaultCover from "@/assets/formation-business.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
