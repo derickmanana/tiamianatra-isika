@@ -32,6 +32,7 @@ import { Route as AuthenticatedPartenaireEcolesRouteImport } from './routes/_aut
 import { Route as AuthenticatedPartenaireDureesRouteImport } from './routes/_authenticated/partenaire.durees'
 import { Route as AuthenticatedModulesIdRouteImport } from './routes/_authenticated/modules.$id'
 import { Route as AuthenticatedFormationsIdRouteImport } from './routes/_authenticated/formations.$id'
+import { Route as AuthenticatedCategoriesSlugRouteImport } from './routes/_authenticated/categories.$slug'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -160,6 +161,12 @@ const AuthenticatedFormationsIdRoute =
     path: '/formations/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCategoriesSlugRoute =
+  AuthenticatedCategoriesSlugRouteImport.update({
+    id: '/categories/$slug',
+    path: '/categories/$slug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -172,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/paiements': typeof AuthenticatedPaiementsRoute
   '/partenaire': typeof AuthenticatedPartenaireRouteWithChildren
   '/profil': typeof AuthenticatedProfilRoute
+  '/categories/$slug': typeof AuthenticatedCategoriesSlugRoute
   '/formations/$id': typeof AuthenticatedFormationsIdRoute
   '/modules/$id': typeof AuthenticatedModulesIdRoute
   '/partenaire/durees': typeof AuthenticatedPartenaireDureesRoute
@@ -195,6 +203,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/paiements': typeof AuthenticatedPaiementsRoute
   '/profil': typeof AuthenticatedProfilRoute
+  '/categories/$slug': typeof AuthenticatedCategoriesSlugRoute
   '/formations/$id': typeof AuthenticatedFormationsIdRoute
   '/modules/$id': typeof AuthenticatedModulesIdRoute
   '/partenaire/durees': typeof AuthenticatedPartenaireDureesRoute
@@ -221,6 +230,7 @@ export interface FileRoutesById {
   '/_authenticated/paiements': typeof AuthenticatedPaiementsRoute
   '/_authenticated/partenaire': typeof AuthenticatedPartenaireRouteWithChildren
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
+  '/_authenticated/categories/$slug': typeof AuthenticatedCategoriesSlugRoute
   '/_authenticated/formations/$id': typeof AuthenticatedFormationsIdRoute
   '/_authenticated/modules/$id': typeof AuthenticatedModulesIdRoute
   '/_authenticated/partenaire/durees': typeof AuthenticatedPartenaireDureesRoute
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/paiements'
     | '/partenaire'
     | '/profil'
+    | '/categories/$slug'
     | '/formations/$id'
     | '/modules/$id'
     | '/partenaire/durees'
@@ -270,6 +281,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/paiements'
     | '/profil'
+    | '/categories/$slug'
     | '/formations/$id'
     | '/modules/$id'
     | '/partenaire/durees'
@@ -295,6 +307,7 @@ export interface FileRouteTypes {
     | '/_authenticated/paiements'
     | '/_authenticated/partenaire'
     | '/_authenticated/profil'
+    | '/_authenticated/categories/$slug'
     | '/_authenticated/formations/$id'
     | '/_authenticated/modules/$id'
     | '/_authenticated/partenaire/durees'
@@ -478,6 +491,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFormationsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/categories/$slug': {
+      id: '/_authenticated/categories/$slug'
+      path: '/categories/$slug'
+      fullPath: '/categories/$slug'
+      preLoaderRoute: typeof AuthenticatedCategoriesSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -519,6 +539,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPaiementsRoute: typeof AuthenticatedPaiementsRoute
   AuthenticatedPartenaireRoute: typeof AuthenticatedPartenaireRouteWithChildren
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
+  AuthenticatedCategoriesSlugRoute: typeof AuthenticatedCategoriesSlugRoute
   AuthenticatedFormationsIdRoute: typeof AuthenticatedFormationsIdRoute
   AuthenticatedModulesIdRoute: typeof AuthenticatedModulesIdRoute
   AuthenticatedCategoriesIndexRoute: typeof AuthenticatedCategoriesIndexRoute
@@ -534,6 +555,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPaiementsRoute: AuthenticatedPaiementsRoute,
   AuthenticatedPartenaireRoute: AuthenticatedPartenaireRouteWithChildren,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
+  AuthenticatedCategoriesSlugRoute: AuthenticatedCategoriesSlugRoute,
   AuthenticatedFormationsIdRoute: AuthenticatedFormationsIdRoute,
   AuthenticatedModulesIdRoute: AuthenticatedModulesIdRoute,
   AuthenticatedCategoriesIndexRoute: AuthenticatedCategoriesIndexRoute,
