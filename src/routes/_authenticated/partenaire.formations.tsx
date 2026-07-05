@@ -128,7 +128,8 @@ function PartnerFormations() {
       youtube_url: editing.youtube_url.trim() || null,
       level: editing.level || null,
       owner_partner_id: partner.id,
-      status: "pending",
+      status: "approved",
+      is_active: true,
     };
     let error;
     let newId: string | undefined;
@@ -155,7 +156,7 @@ function PartnerFormations() {
       }
     }
 
-    toast.success(editing.id ? "Formation mise à jour" : "Formation créée — Module 1 gratuit ajouté (en attente de validation)");
+    toast.success(editing.id ? "Formation mise à jour" : "Formation publiée — Module 1 gratuit ajouté");
     setOpen(false);
     setEditing(null);
     qc.invalidateQueries({ queryKey: ["partner-formations"] });

@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Sparkles, LogIn, Search, Flame, Star, Trophy, ScrollText, Megaphone, GraduationCap } from "lucide-react";
+import { Sparkles, LogIn, Search, Flame, Star, Trophy, ScrollText, Megaphone, GraduationCap, LayoutGrid } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { ClientLayout } from "@/components/ClientLayout";
@@ -12,6 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HeroSlider } from "@/components/HeroSlider";
 import { FormationCard } from "@/components/FormationCard";
+import { FORMATION_CATEGORIES } from "@/lib/formation-categories";
+import defaultCover from "@/assets/formation-business.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -126,6 +128,31 @@ function HomePage() {
 
       {!q && (
         <>
+          <section className="mb-10">
+            <SectionHeader icon={LayoutGrid} title="📚 Explorer par catégorie" accent="bg-gradient-to-br from-indigo-500 to-blue-600" />
+            <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+              {FORMATION_CATEGORIES.slice(0, 12).map((cat) => {
+                const slug = encodeURIComponent(cat);
+                const count = formations?.filter((f: any) => f.category === cat).length ?? 0;
+                return (
+                  <Link key={cat} to="/categories/$slug" params={{ slug }} className="group">
+                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-muted border border-border/50 hover:border-primary/40 shadow-card hover:shadow-elegant transition-shadow">
+                      <img src={defaultCover} alt={cat} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute inset-x-2 bottom-2 text-white">
+                        <p className="font-semibold text-sm line-clamp-2" style={{ textShadow: "0 2px 6px rgba(0,0,0,0.6)" }}>{cat}</p>
+                        <p className="text-[10px] opacity-90">{count > 0 ? `${count} formation${count > 1 ? "s" : ""}` : "Bientôt disponible"}</p>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="mt-4 text-center">
+              <Link to="/categories"><Button variant="outline" className="gap-2"><LayoutGrid className="h-4 w-4" /> Voir toutes les catégories</Button></Link>
+            </div>
+          </section>
+
           <section className="mb-10">
             <SectionHeader icon={Flame} title="🔥 Formations populaires" accent="bg-gradient-to-br from-orange-500 to-red-500" />
             <FormationGrid items={formations} />
