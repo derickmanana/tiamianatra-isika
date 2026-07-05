@@ -128,7 +128,8 @@ function PartnerFormations() {
       youtube_url: editing.youtube_url.trim() || null,
       level: editing.level || null,
       owner_partner_id: partner.id,
-      status: "pending",
+      status: "approved",
+      is_active: true,
     };
     let error;
     let newId: string | undefined;
