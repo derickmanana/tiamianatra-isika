@@ -56,13 +56,13 @@ function CategoriesIndex() {
           const slug = encodeURIComponent(cat);
           return (
             <Card key={cat} className="overflow-hidden group hover:shadow-elegant transition-shadow flex flex-col">
-              <div className="aspect-video relative overflow-hidden bg-muted">
-                <img src={defaultCover} alt={cat} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                <div className="absolute bottom-2 left-3 right-3 text-white">
-                  <h3 className="font-bold text-lg" style={{ textShadow: "0 2px 6px rgba(0,0,0,0.6)" }}>{cat}</h3>
+              <div className="aspect-video relative overflow-hidden bg-muted grid place-items-center">
+                <LayoutGrid className="h-10 w-10 text-muted-foreground/50" />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                  <h3 className="font-bold text-lg text-white" style={{ textShadow: "0 2px 6px rgba(0,0,0,0.6)" }}>{cat}</h3>
                 </div>
               </div>
+
               <CardContent className="p-4 flex-1 flex flex-col gap-3">
                 <p className="text-sm text-muted-foreground">
                   {count > 0
