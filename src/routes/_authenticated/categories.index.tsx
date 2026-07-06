@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { GraduationCap, Search } from "lucide-react";
+import { GraduationCap, LayoutGrid, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ClientLayout } from "@/components/ClientLayout";
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { FORMATION_CATEGORIES } from "@/lib/formation-categories";
-import defaultCover from "@/assets/formation-business.jpg";
+
 
 export const Route = createFileRoute("/_authenticated/categories/")({
   component: CategoriesIndex,
