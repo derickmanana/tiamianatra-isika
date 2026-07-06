@@ -138,13 +138,12 @@ function HomePage() {
                   <Link key={cat} to="/categories/$slug" params={{ slug }} className="group">
                     <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gradient-to-br from-muted to-muted/60 border border-border/50 hover:border-primary/40 shadow-card hover:shadow-elegant transition-shadow grid place-items-center">
                       <LayoutGrid className="h-8 w-8 text-muted-foreground/50" />
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2">
-
-                      <div className="absolute inset-x-2 bottom-2 text-white">
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2 text-white">
                         <p className="font-semibold text-sm line-clamp-2" style={{ textShadow: "0 2px 6px rgba(0,0,0,0.6)" }}>{cat}</p>
                         <p className="text-[10px] opacity-90">{count > 0 ? `${count} formation${count > 1 ? "s" : ""}` : "Bientôt disponible"}</p>
                       </div>
                     </div>
+
                   </Link>
                 );
               })}
