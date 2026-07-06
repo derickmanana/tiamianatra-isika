@@ -1,20 +1,26 @@
 import { memo, useEffect, useState } from "react";
+import { GraduationCap } from "lucide-react";
 import { resolveCoverUrl } from "@/lib/cover-url";
 import { getFormationCover } from "@/lib/formation-covers";
 import { YouTubeCover } from "@/components/YouTubeCover";
 import { extractYouTubeId } from "@/lib/youtube";
-import fallback from "@/assets/formation-business.jpg";
 
 type F = { title?: string | null; cover_url?: string | null; cover_type?: string | null; youtube_url?: string | null };
 
-/** In-memory cache of URLs known to fail so we don't retry them. */
 const brokenUrls = new Set<string>();
 
 function isSafeImageUrl(u: string | null | undefined): boolean {
   if (!u) return false;
   if (brokenUrls.has(u)) return false;
-  // Only http(s) or storage-path-like strings
   return /^https?:\/\//i.test(u) || /^[a-zA-Z0-9_\-\/\.]+$/.test(u);
+}
+
+function Placeholder({ className }: { className?: string }) {
+  return (
+    <div className={"absolute inset-0 grid place-items-center bg-gradient-to-br from-muted to-muted/60 " + (className ?? "")}>
+      <GraduationCap className="h-10 w-10 text-muted-foreground/60" />
+    </div>
+  );
 }
 
 function CoverImageImpl({
@@ -31,7 +37,7 @@ function CoverImageImpl({
   preferStatic?: boolean;
 }) {
   const initial = getFormationCover(formation);
-  const [src, setSrc] = useState<string>(isSafeImageUrl(initial) ? initial : fallback);
+  const [src, setSrc] = useState<string>(isSafeImageUrl(initial) ? initial : "");
   const [errored, setErrored] = useState(false);
 
   useEffect(() => {
@@ -39,9 +45,8 @@ function CoverImageImpl({
     setErrored(false);
     resolveCoverUrl(formation).then((u) => {
       if (!active) return;
-      if (u && isSafeImageUrl(u)) setSrc(u);
-      else setSrc(fallback);
-    }).catch(() => { if (active) setSrc(fallback); });
+      setSrc(u && isSafeImageUrl(u) ? u : "");
+    }).catch(() => { if (active) setSrc(""); });
     return () => { active = false; };
   }, [formation.cover_url, formation.title]);
 
@@ -49,16 +54,16 @@ function CoverImageImpl({
 
   const handleError = (url: string) => {
     if (url) brokenUrls.add(url);
-    console.warn("[CoverImage] media error, using fallback:", url);
     setErrored(true);
   };
 
   if (isVideo && preferStatic) {
     const id = extractYouTubeId(formation.youtube_url!);
-    const thumb = id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : src;
+    const thumb = id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : "";
+    if (errored || !thumb) return <Placeholder className={className} />;
     return (
       <img
-        src={errored ? fallback : thumb}
+        src={thumb}
         alt={alt}
         loading="lazy"
         decoding="async"
@@ -73,22 +78,26 @@ function CoverImageImpl({
   if (isVideo && !videoOnHover) {
     return (
       <div className={"relative w-full h-full overflow-hidden bg-black " + (className ?? "")}>
-        <img
-          src={errored ? fallback : src}
-          alt={alt}
-          loading="lazy"
-          decoding="async"
-          onError={() => handleError(src)}
-          className="absolute inset-0 w-full h-full object-cover opacity-40"
-        />
+        {src && !errored ? (
+          <img
+            src={src}
+            alt={alt}
+            loading="lazy"
+            decoding="async"
+            onError={() => handleError(src)}
+            className="absolute inset-0 w-full h-full object-cover opacity-40"
+          />
+        ) : null}
         <YouTubeCover url={formation.youtube_url!} />
       </div>
     );
   }
 
+  if (!src || errored) return <Placeholder className={className} />;
+
   return (
     <img
-      src={errored ? fallback : src}
+      src={src}
       alt={alt}
       loading="lazy"
       decoding="async"

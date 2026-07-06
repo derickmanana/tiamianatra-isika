@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { HeroSlider } from "@/components/HeroSlider";
 import { FormationCard } from "@/components/FormationCard";
 import { FORMATION_CATEGORIES } from "@/lib/formation-categories";
-import defaultCover from "@/assets/formation-business.jpg";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -136,14 +136,14 @@ function HomePage() {
                 const count = formations?.filter((f: any) => f.category === cat).length ?? 0;
                 return (
                   <Link key={cat} to="/categories/$slug" params={{ slug }} className="group">
-                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-muted border border-border/50 hover:border-primary/40 shadow-card hover:shadow-elegant transition-shadow">
-                      <img src={defaultCover} alt={cat} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                      <div className="absolute inset-x-2 bottom-2 text-white">
+                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gradient-to-br from-muted to-muted/60 border border-border/50 hover:border-primary/40 shadow-card hover:shadow-elegant transition-shadow grid place-items-center">
+                      <LayoutGrid className="h-8 w-8 text-muted-foreground/50" />
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2 text-white">
                         <p className="font-semibold text-sm line-clamp-2" style={{ textShadow: "0 2px 6px rgba(0,0,0,0.6)" }}>{cat}</p>
                         <p className="text-[10px] opacity-90">{count > 0 ? `${count} formation${count > 1 ? "s" : ""}` : "Bientôt disponible"}</p>
                       </div>
                     </div>
+
                   </Link>
                 );
               })}
