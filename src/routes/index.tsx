@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { HeroSlider } from "@/components/HeroSlider";
 import { FormationCard } from "@/components/FormationCard";
 import { FORMATION_CATEGORIES } from "@/lib/formation-categories";
-import defaultCover from "@/assets/formation-business.jpg";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
