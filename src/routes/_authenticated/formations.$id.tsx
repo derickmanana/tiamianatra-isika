@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { ClientLayout } from "@/components/ClientLayout";
 import { BackButton } from "@/components/BackButton";
+import { CourseContentTree } from "@/components/CourseContentTree";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -84,6 +85,7 @@ function FormationDetail() {
           );
         })}
       </div>
+      <CourseContentTree formationId={id} />
     </ClientLayout>
   );
 }

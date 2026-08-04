@@ -18,6 +18,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { reviewPayment, toggleUserBlock, broadcastMessage } from "@/lib/admin.functions";
 import { CoverUploader } from "@/components/CoverUploader";
 import { syncPlaylist, saveYoutubeApiKey, getYoutubeApiKeyMasked } from "@/lib/playlist.functions";
+import { CourseStructureTab } from "@/components/admin/CourseStructureTab";
+import { AccessCodesTab } from "@/components/admin/AccessCodesTab";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({ component: AdminPage });
@@ -58,6 +60,8 @@ function AdminPage() {
           <TabsTrigger value="payments">{t("admin.payments_mgmt")}</TabsTrigger>
           <TabsTrigger value="formations">Formations</TabsTrigger>
           <TabsTrigger value="modules">{t("admin.modules_mgmt")}</TabsTrigger>
+          <TabsTrigger value="structure">Contenu (Dossiers / Blocs / Leçons)</TabsTrigger>
+          <TabsTrigger value="codes">Codes d'accès</TabsTrigger>
           <TabsTrigger value="hero">Slider accueil</TabsTrigger>
           <TabsTrigger value="schools">Écoles</TabsTrigger>
           <TabsTrigger value="tracks">Types apprentissage</TabsTrigger>
@@ -82,6 +86,8 @@ function AdminPage() {
         <TabsContent value="payments"><PaymentsTab /></TabsContent>
         <TabsContent value="formations"><FormationsAdminTab /></TabsContent>
         <TabsContent value="modules"><ModulesTab /></TabsContent>
+        <TabsContent value="structure"><CourseStructureTab /></TabsContent>
+        <TabsContent value="codes"><AccessCodesTab /></TabsContent>
         <TabsContent value="hero"><HeroSlidesTab /></TabsContent>
         <TabsContent value="schools"><SchoolsTab /></TabsContent>
         <TabsContent value="tracks"><TracksTab /></TabsContent>
