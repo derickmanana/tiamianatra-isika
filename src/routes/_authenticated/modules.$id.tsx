@@ -17,6 +17,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formatDuration } from "@/lib/youtube";
 import { toast } from "sonner";
 import { validateAffiliateCode, redeemAffiliateCode } from "@/lib/affiliate.functions";
+import { redeemAccessCode } from "@/lib/access-codes.functions";
+import { KeyRound } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/modules/$id")({ component: ModuleDetail });
 
@@ -281,7 +283,9 @@ function ModuleDetail() {
         </Card>
       ) : (
         mod && (
-          <Card className="shadow-elegant overflow-hidden">
+          <>
+          <AccessCodeUnlock moduleId={id} />
+          <Card className="shadow-elegant overflow-hidden mt-4">
             <div className="h-1.5 bg-gradient-gold" />
             <CardHeader>
               <CardTitle>{t("payment.title")}</CardTitle>
@@ -415,8 +419,53 @@ function ModuleDetail() {
               </form>
             </CardContent>
           </Card>
+          </>
         )
       )}
     </ClientLayout>
+  );
+}
+
+function AccessCodeUnlock({ moduleId }: { moduleId: string }) {
+  const redeem = useServerFn(redeemAccessCode);
+  const [code, setCode] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const submit = async () => {
+    if (!code.trim()) return;
+    setBusy(true);
+    try {
+      await redeem({ data: { code: code.trim(), moduleId } });
+      toast.success("Module débloqué avec votre code !");
+      window.location.reload();
+    } catch (e: any) {
+      toast.error(e?.message || "Code invalide");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Card className="border-gold/40">
+      <CardHeader>
+        <CardTitle className="text-base flex items-center gap-2">
+          <KeyRound className="h-4 w-4 text-gold" /> Débloquer avec un code d'accès
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Vous avez reçu un code de l'administration ? Saisissez-le pour accéder immédiatement à ce module.
+        </p>
+      </CardHeader>
+      <CardContent className="flex gap-2 flex-wrap">
+        <Input
+          className="flex-1 min-w-[180px] font-mono uppercase"
+          placeholder="EX : A1B2C3D4E5"
+          value={code}
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+        />
+        <Button onClick={submit} disabled={busy || !code.trim()}>
+          {busy ? "Vérification…" : "Débloquer"}
+        </Button>
+      </CardContent>
+    </Card>
   );
 }

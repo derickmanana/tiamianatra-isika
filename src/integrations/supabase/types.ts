@@ -14,6 +14,85 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_code_uses: {
+        Row: {
+          code_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          code_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          code_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "access_code_uses_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "access_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      access_codes: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          label: string | null
+          max_uses: number | null
+          module_id: string
+          updated_at: string
+          uses_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          max_uses?: number | null
+          module_id: string
+          updated_at?: string
+          uses_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          max_uses?: number | null
+          module_id?: string
+          updated_at?: string
+          uses_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "access_codes_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_codes: {
         Row: {
           code: string
@@ -166,6 +245,41 @@ export type Database = {
           },
         ]
       }
+      course_blocks: {
+        Row: {
+          created_at: string
+          display_order: number
+          folder_id: string
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          folder_id: string
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          folder_id?: string
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_blocks_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "course_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_durations: {
         Row: {
           created_at: string
@@ -201,6 +315,88 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      course_folders: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          formation_id: string
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          formation_id: string
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          formation_id?: string
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_folders_formation_id_fkey"
+            columns: ["formation_id"]
+            isOneToOne: false
+            referencedRelation: "formations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_lessons: {
+        Row: {
+          block_id: string
+          created_at: string
+          description: string | null
+          display_order: number
+          external_url: string | null
+          files: Json
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          block_id: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          external_url?: string | null
+          files?: Json
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          block_id?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          external_url?: string | null
+          files?: Json
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_lessons_block_id_fkey"
+            columns: ["block_id"]
+            isOneToOne: false
+            referencedRelation: "course_blocks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       formation_enrollments: {
         Row: {
@@ -1119,6 +1315,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      owns_formation: { Args: { _formation_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "client" | "formateur" | "recruteur"
