@@ -441,7 +441,12 @@ function AccessCodeUnlock({ moduleId }: { moduleId: string }) {
       toast.success("Module débloqué avec votre code !");
       window.location.reload();
     } catch (e: any) {
-      toast.error(e?.message || "Code invalide");
+      const msg = String(e?.message ?? "");
+      toast.error(
+        !msg || /Supabase|environment|Unauthorized|fetch|Failed/i.test(msg)
+          ? "Service momentanément indisponible. Merci de réessayer dans un instant."
+          : msg,
+      );
     } finally {
       setBusy(false);
     }
