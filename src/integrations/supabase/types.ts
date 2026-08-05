@@ -1320,6 +1320,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      module_preview_stats: {
+        Args: { _formation_id: string }
+        Returns: {
+          module_id: string
+          total_seconds: number
+          videos_count: number
+        }[]
+      }
       owns_formation: { Args: { _formation_id: string }; Returns: boolean }
     }
     Enums: {
