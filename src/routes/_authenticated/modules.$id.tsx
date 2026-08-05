@@ -18,6 +18,7 @@ import { formatDuration } from "@/lib/youtube";
 import { toast } from "sonner";
 import { validateAffiliateCode, redeemAffiliateCode } from "@/lib/affiliate.functions";
 import { redeemAccessCode } from "@/lib/access-codes.functions";
+import { CourseContentTree } from "@/components/CourseContentTree";
 import { KeyRound } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/modules/$id")({ component: ModuleDetail });
