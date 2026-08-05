@@ -1307,7 +1307,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_read_lesson_file: { Args: { _object_name: string }; Returns: boolean }
       get_user_badge: { Args: { _user_id: string }; Returns: string }
+      has_formation_content_access: {
+        Args: { _formation_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
