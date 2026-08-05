@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Lock, CheckCircle2, PlayCircle } from "lucide-react";
+import { Lock, CheckCircle2, PlayCircle, ShieldCheck, Video } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { ClientLayout } from "@/components/ClientLayout";
 import { BackButton } from "@/components/BackButton";
-import { CourseContentTree } from "@/components/CourseContentTree";
+import { formatDuration } from "@/lib/youtube";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -41,6 +41,17 @@ function FormationDetail() {
       return new Set((data ?? []).map((u) => u.module_id));
     },
   });
+  const { data: stats } = useQuery({
+    queryKey: ["module_stats", id],
+    queryFn: async () => {
+      const { data } = await supabase.rpc("module_preview_stats", { _formation_id: id });
+      const map: Record<string, { videos_count: number; total_seconds: number }> = {};
+      (data ?? []).forEach((r) => {
+        if (r.module_id) map[r.module_id] = { videos_count: r.videos_count ?? 0, total_seconds: r.total_seconds ?? 0 };
+      });
+      return map;
+    },
+  });
 
   return (
     <ClientLayout>
@@ -55,6 +66,7 @@ function FormationDetail() {
           const prevModule = modules[idx - 1];
           const prevUnlocked = !prevModule || unlocked?.has(prevModule.id);
           const accessible = isUnlocked || prevUnlocked;
+          const s = stats?.[m.id];
           return (
             <Card key={m.id} className={!accessible ? "opacity-60" : "hover:shadow-elegant transition-shadow"}>
               <CardHeader className="flex flex-row items-center justify-between gap-3">
@@ -64,6 +76,12 @@ function FormationDetail() {
                     {t("module.order", { n: m.display_order })} — {m.title}
                   </CardTitle>
                   <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{m.description}</p>
+                  {s && s.videos_count > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                      <Video className="h-3 w-3" /> {s.videos_count} vidéo{s.videos_count > 1 ? "s" : ""}
+                      {s.total_seconds > 0 && ` • ${formatDuration(s.total_seconds)}`}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-col items-end gap-2">
                   <Badge variant={isUnlocked ? "default" : "secondary"}>
@@ -85,7 +103,10 @@ function FormationDetail() {
           );
         })}
       </div>
-      <CourseContentTree formationId={id} />
+      <p className="text-xs text-muted-foreground mt-6 flex items-center gap-2">
+        <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+        Le contenu détaillé (leçons, documents, vidéos) est privé et s'affiche après déblocage du module.
+      </p>
     </ClientLayout>
   );
 }

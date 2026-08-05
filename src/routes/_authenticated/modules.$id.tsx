@@ -18,6 +18,7 @@ import { formatDuration } from "@/lib/youtube";
 import { toast } from "sonner";
 import { validateAffiliateCode, redeemAffiliateCode } from "@/lib/affiliate.functions";
 import { redeemAccessCode } from "@/lib/access-codes.functions";
+import { CourseContentTree } from "@/components/CourseContentTree";
 import { KeyRound } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/modules/$id")({ component: ModuleDetail });
@@ -231,6 +232,7 @@ function ModuleDetail() {
 
       {unlocked ? (
         <div className="space-y-4">
+          {mod?.formation_id && <CourseContentTree formationId={mod.formation_id} />}
           {!videos || videos.length === 0 ? (
             <p className="text-muted-foreground">{t("module.no_videos")}</p>
           ) : (
@@ -439,7 +441,12 @@ function AccessCodeUnlock({ moduleId }: { moduleId: string }) {
       toast.success("Module débloqué avec votre code !");
       window.location.reload();
     } catch (e: any) {
-      toast.error(e?.message || "Code invalide");
+      const msg = String(e?.message ?? "");
+      toast.error(
+        !msg || /Supabase|environment|Unauthorized|fetch|Failed/i.test(msg)
+          ? "Service momentanément indisponible. Merci de réessayer dans un instant."
+          : msg,
+      );
     } finally {
       setBusy(false);
     }
