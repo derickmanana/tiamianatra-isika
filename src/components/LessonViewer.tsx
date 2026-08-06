@@ -3,6 +3,9 @@ import { FileText, ExternalLink, Download, File as FileIcon } from "lucide-react
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { GoogleDocViewer } from "@/components/GoogleDocViewer";
+import { isGoogleDocUrl } from "@/lib/google-docs";
+
 
 export type LessonFile = { name: string; path: string; mime?: string };
 
