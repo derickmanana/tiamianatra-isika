@@ -71,7 +71,11 @@ export function LessonViewer({
           <p className="text-sm text-muted-foreground whitespace-pre-wrap">{lesson.description}</p>
         )}
 
-        {lesson?.external_url && (
+        {lesson?.external_url && isGoogleDocUrl(lesson.external_url) && (
+          <GoogleDocViewer url={lesson.external_url} />
+        )}
+
+        {lesson?.external_url && !isGoogleDocUrl(lesson.external_url) && (
           <a
             href={lesson.external_url}
             target="_blank"
@@ -81,6 +85,7 @@ export function LessonViewer({
             <ExternalLink className="h-4 w-4" /> Ouvrir le lien externe
           </a>
         )}
+
 
         {files.length > 0 && (
           <div className="space-y-2">
