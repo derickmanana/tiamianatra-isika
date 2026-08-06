@@ -78,7 +78,11 @@ export function LessonViewer({
           <GoogleDocViewer url={lesson.external_url} />
         )}
 
-        {lesson?.external_url && !isGoogleDocUrl(lesson.external_url) && (
+        {lesson?.external_url && isGoogleDriveUrl(lesson.external_url) && (
+          <GoogleDriveViewer url={lesson.external_url} />
+        )}
+
+        {lesson?.external_url && !isGoogleDocUrl(lesson.external_url) && !isGoogleDriveUrl(lesson.external_url) && (
           <a
             href={lesson.external_url}
             target="_blank"
@@ -88,6 +92,7 @@ export function LessonViewer({
             <ExternalLink className="h-4 w-4" /> Ouvrir le lien externe
           </a>
         )}
+
 
 
         {files.length > 0 && (
