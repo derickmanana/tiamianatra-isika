@@ -3,6 +3,9 @@ import { FileText, ExternalLink, Download, File as FileIcon } from "lucide-react
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { GoogleDocViewer } from "@/components/GoogleDocViewer";
+import { isGoogleDocUrl } from "@/lib/google-docs";
+
 
 export type LessonFile = { name: string; path: string; mime?: string };
 
@@ -68,7 +71,11 @@ export function LessonViewer({
           <p className="text-sm text-muted-foreground whitespace-pre-wrap">{lesson.description}</p>
         )}
 
-        {lesson?.external_url && (
+        {lesson?.external_url && isGoogleDocUrl(lesson.external_url) && (
+          <GoogleDocViewer url={lesson.external_url} />
+        )}
+
+        {lesson?.external_url && !isGoogleDocUrl(lesson.external_url) && (
           <a
             href={lesson.external_url}
             target="_blank"
@@ -78,6 +85,7 @@ export function LessonViewer({
             <ExternalLink className="h-4 w-4" /> Ouvrir le lien externe
           </a>
         )}
+
 
         {files.length > 0 && (
           <div className="space-y-2">

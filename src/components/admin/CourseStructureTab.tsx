@@ -297,9 +297,13 @@ export function CourseStructureTab() {
                 <Textarea rows={3} value={lessonDraft.description} onChange={(e) => setLessonDraft({ ...lessonDraft, description: e.target.value })} />
               </div>
               <div>
-                <Label>Lien externe</Label>
-                <Input placeholder="https://…" value={lessonDraft.external_url} onChange={(e) => setLessonDraft({ ...lessonDraft, external_url: e.target.value })} />
+                <Label>Lien externe / Google Docs</Label>
+                <Input placeholder="https://docs.google.com/document/d/… ou https://…" value={lessonDraft.external_url} onChange={(e) => setLessonDraft({ ...lessonDraft, external_url: e.target.value })} />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Un lien Google Docs s'affichera directement dans la leçon.
+                </p>
               </div>
+
               <div>
                 <Label>Ordre</Label>
                 <Input type="number" value={lessonDraft.display_order} onChange={(e) => setLessonDraft({ ...lessonDraft, display_order: Number(e.target.value) })} />
