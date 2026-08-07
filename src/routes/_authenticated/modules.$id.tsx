@@ -18,7 +18,7 @@ import { formatDuration } from "@/lib/youtube";
 import { toast } from "sonner";
 import { validateAffiliateCode, redeemAffiliateCode } from "@/lib/affiliate.functions";
 import { redeemAccessCode } from "@/lib/access-codes.functions";
-import { CourseContentTree } from "@/components/CourseContentTree";
+import { ModuleLearningView } from "@/components/learning/ModuleLearningView";
 import { KeyRound } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/modules/$id")({ component: ModuleDetail });
@@ -38,6 +38,7 @@ function ModuleDetail() {
   const [affCode, setAffCode] = useState("");
   const [affApplied, setAffApplied] = useState(false);
   const [useFreeCredit, setUseFreeCredit] = useState(false);
+  const [activeVideo, setActiveVideo] = useState<string | null>(null);
 
   const { data: mod } = useQuery({
     queryKey: ["module", id],
@@ -232,7 +233,13 @@ function ModuleDetail() {
 
       {unlocked ? (
         <div className="space-y-4">
-          {mod?.formation_id && <CourseContentTree formationId={mod.formation_id} />}
+          {mod?.formation_id && (
+            <ModuleLearningView
+              formationId={mod.formation_id}
+              title={mod.title}
+              description={mod.description}
+            />
+          )}
           {!videos || videos.length === 0 ? (
             <p className="text-muted-foreground">{t("module.no_videos")}</p>
           ) : (
@@ -240,7 +247,7 @@ function ModuleDetail() {
               <div className="aspect-video rounded-xl overflow-hidden shadow-elegant bg-black">
                 <iframe
                   className="w-full h-full"
-                  src={`https://www.youtube.com/embed/${videos[0].youtube_video_id}`}
+                  src={`https://www.youtube.com/embed/${activeVideo ?? videos[0].youtube_video_id}`}
                   title={videos[0].title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -251,12 +258,15 @@ function ModuleDetail() {
               </h2>
               <div className="grid gap-2 md:grid-cols-2">
                 {videos.map((v, i) => (
-                  <a
+                  <button
                     key={v.id}
-                    href={`https://www.youtube.com/watch?v=${v.youtube_video_id}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex gap-3 p-3 rounded-lg border hover:bg-muted transition-colors"
+                    type="button"
+                    onClick={() => setActiveVideo(v.youtube_video_id)}
+                    className={`flex gap-3 p-3 rounded-xl border text-left hover:bg-muted transition-colors ${
+                      (activeVideo ?? videos[0].youtube_video_id) === v.youtube_video_id
+                        ? "border-primary"
+                        : ""
+                    }`}
                   >
                     <div className="relative w-32 aspect-video rounded overflow-hidden shrink-0 bg-muted">
                       {v.thumbnail_url && (
@@ -271,7 +281,7 @@ function ModuleDetail() {
                         {formatDuration(v.duration_seconds ?? 0)}
                       </p>
                     </div>
-                  </a>
+                  </button>
                 ))}
               </div>
             </>
