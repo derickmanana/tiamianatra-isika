@@ -38,6 +38,7 @@ function ModuleDetail() {
   const [affCode, setAffCode] = useState("");
   const [affApplied, setAffApplied] = useState(false);
   const [useFreeCredit, setUseFreeCredit] = useState(false);
+  const [activeVideo, setActiveVideo] = useState<string | null>(null);
 
   const { data: mod } = useQuery({
     queryKey: ["module", id],
