@@ -246,7 +246,7 @@ function ModuleDetail() {
               <div className="aspect-video rounded-xl overflow-hidden shadow-elegant bg-black">
                 <iframe
                   className="w-full h-full"
-                  src={`https://www.youtube.com/embed/${videos[0].youtube_video_id}`}
+                  src={`https://www.youtube.com/embed/${activeVideo ?? videos[0].youtube_video_id}`}
                   title={videos[0].title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -257,12 +257,15 @@ function ModuleDetail() {
               </h2>
               <div className="grid gap-2 md:grid-cols-2">
                 {videos.map((v, i) => (
-                  <a
+                  <button
                     key={v.id}
-                    href={`https://www.youtube.com/watch?v=${v.youtube_video_id}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex gap-3 p-3 rounded-lg border hover:bg-muted transition-colors"
+                    type="button"
+                    onClick={() => setActiveVideo(v.youtube_video_id)}
+                    className={`flex gap-3 p-3 rounded-xl border text-left hover:bg-muted transition-colors ${
+                      (activeVideo ?? videos[0].youtube_video_id) === v.youtube_video_id
+                        ? "border-primary"
+                        : ""
+                    }`}
                   >
                     <div className="relative w-32 aspect-video rounded overflow-hidden shrink-0 bg-muted">
                       {v.thumbnail_url && (
@@ -277,7 +280,7 @@ function ModuleDetail() {
                         {formatDuration(v.duration_seconds ?? 0)}
                       </p>
                     </div>
-                  </a>
+                  </button>
                 ))}
               </div>
             </>
