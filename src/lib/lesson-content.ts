@@ -32,7 +32,7 @@ export function detectLessonContent(lesson: LessonLike | null | undefined): Less
   const url = lesson.external_url?.trim();
   if (url) {
     if (isYouTubeUrl(url)) {
-      const id = extractVideoId(url);
+      const id = extractYouTubeId(url);
       if (id) return { kind: "youtube", videoId: id };
     }
     if (isGoogleDocUrl(url)) {
