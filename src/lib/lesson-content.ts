@@ -1,6 +1,6 @@
 import { extractGoogleDocId, isGoogleDocUrl } from "@/lib/google-docs";
 import { extractGoogleDriveId, isGoogleDriveUrl } from "@/lib/google-drive";
-import { extractVideoId } from "@/lib/youtube";
+import { extractYouTubeId } from "@/lib/youtube";
 
 export type LessonContentKind = "youtube" | "gdoc" | "gdrive" | "storage" | "none";
 
