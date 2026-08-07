@@ -232,7 +232,13 @@ function ModuleDetail() {
 
       {unlocked ? (
         <div className="space-y-4">
-          {mod?.formation_id && <CourseContentTree formationId={mod.formation_id} />}
+          {mod?.formation_id && (
+            <ModuleLearningView
+              formationId={mod.formation_id}
+              title={mod.title}
+              description={mod.description}
+            />
+          )}
           {!videos || videos.length === 0 ? (
             <p className="text-muted-foreground">{t("module.no_videos")}</p>
           ) : (
