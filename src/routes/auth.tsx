@@ -28,6 +28,25 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState<SignupRole>("etudiant");
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+
+  const resendVerification = async () => {
+    if (!email || resending) return;
+    setResending(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+    });
+    setResending(false);
+    if (error) {
+      const m = error.message.toLowerCase();
+      if (m.includes("already") || m.includes("confirmed"))
+        return toast.info("Cet email est déjà confirmé — connectez-vous simplement.");
+      return toast.error(error.message);
+    }
+    toast.success("Un nouvel email de vérification vient d'être envoyé.");
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
