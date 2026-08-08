@@ -53,8 +53,22 @@ function AuthPage() {
     setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      const m = error.message.toLowerCase();
+      if (m.includes("not confirmed") || m.includes("confirm"))
+        return toast.error("Votre email n'est pas encore confirmé. Vérifiez votre boîte mail ou renvoyez l'email de vérification.");
+      return toast.error(error.message);
+    }
     toast.success(t("auth.logged_in"));
+
+    const { data: adminRole } = data.user
+      ? await supabase.from("user_roles").select("role").eq("user_id", data.user.id).eq("role", "admin").maybeSingle()
+      : { data: null };
+    if (adminRole) {
+      navigate({ to: "/admin" });
+      return;
+    }
+
 
     // Redirection selon le partenariat existant
     const userId = data.user?.id;
