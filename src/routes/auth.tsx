@@ -118,7 +118,16 @@ function AuthPage() {
                   <div><Label>{t("common.password")}</Label><Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} /></div>
                   <Button type="submit" className="w-full bg-gradient-primary" disabled={loading}>{t("auth.login_button")}</Button>
                 </form>
+                <button
+                  type="button"
+                  onClick={resendVerification}
+                  disabled={resending || !email}
+                  className="mt-3 w-full text-xs text-muted-foreground underline disabled:opacity-50"
+                >
+                  {resending ? "Envoi…" : "Renvoyer l'email de vérification"}
+                </button>
               </TabsContent>
+
 
               <TabsContent value="signup">
                 <form onSubmit={handleSignup} className="space-y-3">
