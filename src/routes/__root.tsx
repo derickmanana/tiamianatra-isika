@@ -46,12 +46,28 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function AuthLinkRescue() {
+  useEffect(() => {
+    if (window.location.pathname.startsWith("/auth/callback")) return;
+    const hash = window.location.hash.replace(/^#/, "");
+    const search = window.location.search;
+    const looksLikeAuthLink =
+      /access_token=|refresh_token=|error_code=|type=signup|type=recovery|type=email/.test(hash) ||
+      /[?&](token_hash|error_code)=/.test(search);
+    if (looksLikeAuthLink) {
+      window.location.replace(`/auth/callback${search}${window.location.hash}`);
+    }
+  }, []);
+  return null;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
+          <AuthLinkRescue />
           <Outlet />
           <Toaster richColors position="top-right" />
         </AuthProvider>
@@ -59,3 +75,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
