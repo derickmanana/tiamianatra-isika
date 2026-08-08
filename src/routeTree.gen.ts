@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthCallbackRouteImport } from './routes/auth_.callback'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedPartenaireRouteImport } from './routes/_authenticated/partenaire'
 import { Route as AuthenticatedPaiementsRouteImport } from './routes/_authenticated/paiements'
@@ -47,6 +48,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth_/callback',
+  path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/paiements': typeof AuthenticatedPaiementsRoute
   '/partenaire': typeof AuthenticatedPartenaireRouteWithChildren
   '/profil': typeof AuthenticatedProfilRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/categories/$slug': typeof AuthenticatedCategoriesSlugRoute
   '/ecoles/$id': typeof AuthenticatedEcolesIdRoute
   '/formations/$id': typeof AuthenticatedFormationsIdRoute
@@ -210,6 +217,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/paiements': typeof AuthenticatedPaiementsRoute
   '/profil': typeof AuthenticatedProfilRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/categories/$slug': typeof AuthenticatedCategoriesSlugRoute
   '/ecoles/$id': typeof AuthenticatedEcolesIdRoute
   '/formations/$id': typeof AuthenticatedFormationsIdRoute
@@ -238,6 +246,7 @@ export interface FileRoutesById {
   '/_authenticated/paiements': typeof AuthenticatedPaiementsRoute
   '/_authenticated/partenaire': typeof AuthenticatedPartenaireRouteWithChildren
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
+  '/auth_/callback': typeof AuthCallbackRoute
   '/_authenticated/categories/$slug': typeof AuthenticatedCategoriesSlugRoute
   '/_authenticated/ecoles/$id': typeof AuthenticatedEcolesIdRoute
   '/_authenticated/formations/$id': typeof AuthenticatedFormationsIdRoute
@@ -266,6 +275,7 @@ export interface FileRouteTypes {
     | '/paiements'
     | '/partenaire'
     | '/profil'
+    | '/auth/callback'
     | '/categories/$slug'
     | '/ecoles/$id'
     | '/formations/$id'
@@ -291,6 +301,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/paiements'
     | '/profil'
+    | '/auth/callback'
     | '/categories/$slug'
     | '/ecoles/$id'
     | '/formations/$id'
@@ -318,6 +329,7 @@ export interface FileRouteTypes {
     | '/_authenticated/paiements'
     | '/_authenticated/partenaire'
     | '/_authenticated/profil'
+    | '/auth_/callback'
     | '/_authenticated/categories/$slug'
     | '/_authenticated/ecoles/$id'
     | '/_authenticated/formations/$id'
@@ -338,6 +350,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -361,6 +374,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth_/callback': {
+      id: '/auth_/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/profil': {
@@ -590,6 +610,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -21,9 +21,13 @@ export function ClientLayout({ children }: { children: ReactNode }) {
 
   const resendConfirmation = async () => {
     if (!user?.email) return;
-    const { error } = await supabase.auth.resend({ type: "signup", email: user.email });
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: user.email,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+    });
     if (error) toast.error(error.message);
-    else toast.success("Email de confirmation renvoyé");
+    else toast.success("Un nouvel email de vérification vient d'être envoyé.");
   };
 
 

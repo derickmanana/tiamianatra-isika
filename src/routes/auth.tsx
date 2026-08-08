@@ -28,14 +28,47 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState<SignupRole>("etudiant");
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+
+  const resendVerification = async () => {
+    if (!email || resending) return;
+    setResending(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+    });
+    setResending(false);
+    if (error) {
+      const m = error.message.toLowerCase();
+      if (m.includes("already") || m.includes("confirmed"))
+        return toast.info("Cet email est déjà confirmé — connectez-vous simplement.");
+      return toast.error(error.message);
+    }
+    toast.success("Un nouvel email de vérification vient d'être envoyé.");
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      const m = error.message.toLowerCase();
+      if (m.includes("not confirmed") || m.includes("confirm"))
+        return toast.error("Votre email n'est pas encore confirmé. Vérifiez votre boîte mail ou renvoyez l'email de vérification.");
+      return toast.error(error.message);
+    }
     toast.success(t("auth.logged_in"));
+
+    const { data: adminRole } = data.user
+      ? await supabase.from("user_roles").select("role").eq("user_id", data.user.id).eq("role", "admin").maybeSingle()
+      : { data: null };
+    if (adminRole) {
+      navigate({ to: "/admin" });
+      return;
+    }
+
 
     // Redirection selon le partenariat existant
     const userId = data.user?.id;
@@ -59,7 +92,7 @@ function AuthPage() {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: window.location.origin, data: { full_name: fullName } },
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback`, data: { full_name: fullName, signup_role: role } },
     });
     if (error) {
       setLoading(false);
@@ -118,7 +151,16 @@ function AuthPage() {
                   <div><Label>{t("common.password")}</Label><Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} /></div>
                   <Button type="submit" className="w-full bg-gradient-primary" disabled={loading}>{t("auth.login_button")}</Button>
                 </form>
+                <button
+                  type="button"
+                  onClick={resendVerification}
+                  disabled={resending || !email}
+                  className="mt-3 w-full text-xs text-muted-foreground underline disabled:opacity-50"
+                >
+                  {resending ? "Envoi…" : "Renvoyer l'email de vérification"}
+                </button>
               </TabsContent>
+
 
               <TabsContent value="signup">
                 <form onSubmit={handleSignup} className="space-y-3">
