@@ -2,13 +2,14 @@ import { extractGoogleDocId, isGoogleDocUrl } from "@/lib/google-docs";
 import { extractGoogleDriveId, isGoogleDriveUrl } from "@/lib/google-drive";
 import { extractYouTubeId } from "@/lib/youtube";
 
-export type LessonContentKind = "youtube" | "gdoc" | "gdrive" | "storage" | "none";
+export type LessonContentKind = "youtube" | "gdoc" | "gdrive" | "storage" | "link" | "none";
 
 export type LessonContent =
   | { kind: "youtube"; videoId: string }
   | { kind: "gdoc"; embedUrl: string }
   | { kind: "gdrive"; embedUrl: string }
-  | { kind: "storage"; path: string; name: string }
+  | { kind: "storage"; path: string; name: string; isPdf: boolean }
+  | { kind: "link"; url: string }
   | { kind: "none" };
 
 export type LessonFileRef = { name: string; path: string; mime?: string };
@@ -45,11 +46,34 @@ export function detectLessonContent(lesson: LessonLike | null | undefined): Less
     }
   }
   const file = (lesson.files ?? [])[0];
-  if (file) return { kind: "storage", path: file.path, name: file.name };
+  if (file) {
+    const isPdf = file.mime === "application/pdf" || /\.pdf$/i.test(file.name);
+    return { kind: "storage", path: file.path, name: file.name, isPdf };
+  }
+  if (url) return { kind: "link", url };
   return { kind: "none" };
 }
 
 /** Icon key for the lesson type, used by the UI. */
 export function lessonKind(lesson: LessonLike): LessonContentKind {
   return detectLessonContent(lesson).kind;
+}
+
+/** Human label (FR) of the lesson content type, shown in the lesson list. */
+export function lessonTypeLabel(lesson: LessonLike): string {
+  const content = detectLessonContent(lesson);
+  switch (content.kind) {
+    case "youtube":
+      return "Vidéo";
+    case "gdoc":
+      return "Google Docs";
+    case "gdrive":
+      return "Google Drive";
+    case "storage":
+      return content.isPdf ? "PDF" : "Document";
+    case "link":
+      return "Lien externe";
+    default:
+      return "Bientôt disponible";
+  }
 }
