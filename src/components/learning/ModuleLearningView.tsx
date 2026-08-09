@@ -247,12 +247,13 @@ export function ModuleLearningView({
                       {blockDone > 1 ? "s" : ""}
                     </span>
                   </span>
-                  <ChevronDown
-                    className={cn(
-                      "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
-                      isOpen && "rotate-180",
-                    )}
-                  />
+                  <span className="flex shrink-0 items-center gap-1 text-xs font-semibold text-primary">
+                    {isOpen ? "Fermer" : "Ouvrir"}
+                    <ChevronDown
+                      className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")}
+                    />
+                  </span>
+
                 </button>
 
                 {isOpen && (
