@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ExternalLink, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { detectLessonContent, type LessonLike } from "@/lib/lesson-content";
@@ -30,12 +30,10 @@ function loadYouTubeApi(): Promise<any> {
   return ytApiPromise;
 }
 
-function YouTubeLesson({ videoId, onEnded }: { videoId: string; onEnded: () => void }) {
+function YouTubeLesson({ videoId }: { videoId: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const endedRef = useRef(false);
 
   useEffect(() => {
-    endedRef.current = false;
     let player: any;
     let cancelled = false;
     loadYouTubeApi().then((YT) => {
@@ -43,14 +41,6 @@ function YouTubeLesson({ videoId, onEnded }: { videoId: string; onEnded: () => v
       player = new YT.Player(ref.current, {
         videoId,
         playerVars: { rel: 0, modestbranding: 1, playsinline: 1 },
-        events: {
-          onStateChange: (e: any) => {
-            if (e.data === YT.PlayerState.ENDED && !endedRef.current) {
-              endedRef.current = true;
-              onEnded();
-            }
-          },
-        },
       });
     });
     return () => {
@@ -61,7 +51,6 @@ function YouTubeLesson({ videoId, onEnded }: { videoId: string; onEnded: () => v
         /* ignore */
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoId]);
 
   return (
@@ -71,18 +60,57 @@ function YouTubeLesson({ videoId, onEnded }: { videoId: string; onEnded: () => v
   );
 }
 
-function StorageLesson({ path, name }: { path: string; name: string }) {
+function Unavailable({ url, message }: { url?: string; message?: string }) {
+  return (
+    <div className="space-y-3 rounded-xl border border-destructive/40 bg-destructive/5 p-4 text-sm">
+      <p className="flex items-start gap-2 text-destructive">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+        {message ??
+          "Impossible d'afficher ce contenu. Le fichier Google Drive n'est pas accessible avec les autorisations actuelles."}
+      </p>
+      {url && (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-primary"
+        >
+          <ExternalLink className="h-3.5 w-3.5" /> Ouvrir le contenu dans un nouvel onglet
+        </a>
+      )}
+    </div>
+  );
+}
+
+/** Renders storage files inline (blob URL) so the browser never auto-downloads. */
+function StorageLesson({ path, name, isPdf }: { path: string; name: string; isPdf: boolean }) {
   const [url, setUrl] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
+
   useEffect(() => {
     let cancelled = false;
+    let objectUrl: string | null = null;
+    setUrl(null);
+    setFailed(false);
     (async () => {
-      const { data } = await supabase.storage.from("lesson-files").createSignedUrl(path, 3600);
-      if (!cancelled) setUrl(data?.signedUrl ?? null);
+      const { data, error } = await supabase.storage.from("lesson-files").download(path);
+      if (cancelled) return;
+      if (error || !data) {
+        setFailed(true);
+        return;
+      }
+      const type = isPdf ? "application/pdf" : data.type || "application/octet-stream";
+      objectUrl = URL.createObjectURL(new Blob([data], { type }));
+      setUrl(objectUrl);
     })();
     return () => {
       cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [path]);
+  }, [path, isPdf]);
+
+  if (failed)
+    return <Unavailable message="Impossible d'afficher ce document. Veuillez contacter le formateur." />;
 
   if (!url)
     return (
@@ -90,7 +118,23 @@ function StorageLesson({ path, name }: { path: string; name: string }) {
         <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
       </div>
     );
-  return <iframe src={url} title={name} className="h-[70vh] w-full rounded-xl border bg-muted" />;
+
+  return (
+    <div className="space-y-2">
+      <iframe
+        src={url}
+        title={name}
+        className="h-[70vh] max-h-[70vh] w-full rounded-xl border bg-muted"
+      />
+      <a
+        href={url}
+        download={name}
+        className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-primary"
+      >
+        <ExternalLink className="h-3.5 w-3.5" /> Télécharger {name} (optionnel)
+      </a>
+    </div>
+  );
 }
 
 export function LessonPlayer({
@@ -107,26 +151,37 @@ export function LessonPlayer({
   const content = detectLessonContent(lesson);
 
   return (
-    <div className="space-y-3 rounded-2xl border bg-card p-3 sm:p-4">
-      {lesson.description && (
-        <p className="whitespace-pre-wrap text-sm text-muted-foreground">{lesson.description}</p>
-      )}
-
-      {content.kind === "youtube" && (
-        <YouTubeLesson videoId={content.videoId} onEnded={onComplete} />
-      )}
+    <div className="space-y-3">
+      {content.kind === "youtube" && <YouTubeLesson videoId={content.videoId} />}
 
       {(content.kind === "gdoc" || content.kind === "gdrive") && (
-        <iframe
-          src={content.embedUrl}
-          title={lesson.title}
-          allow="autoplay; fullscreen"
-          allowFullScreen
-          className="h-[70vh] w-full rounded-xl border bg-muted"
-        />
+        <div className="w-full overflow-hidden rounded-xl border bg-muted">
+          <iframe
+            src={content.embedUrl}
+            title={lesson.title}
+            allow="autoplay; fullscreen"
+            allowFullScreen
+            className="h-[70vh] max-h-[70vh] w-full"
+          />
+        </div>
       )}
 
-      {content.kind === "storage" && <StorageLesson path={content.path} name={content.name} />}
+      {content.kind === "storage" && (
+        <StorageLesson path={content.path} name={content.name} isPdf={content.isPdf} />
+      )}
+
+      {content.kind === "link" && (
+        <div className="space-y-3 rounded-xl border bg-muted/30 p-4 text-sm">
+          <p className="text-muted-foreground">
+            Ce contenu ne peut pas être affiché directement dans l'application.
+          </p>
+          <Button asChild size="sm" variant="outline" className="gap-2">
+            <a href={content.url} target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="h-4 w-4" /> Ouvrir le contenu
+            </a>
+          </Button>
+        </div>
+      )}
 
       {content.kind === "none" && (
         <p className="rounded-xl bg-muted p-6 text-center text-sm text-muted-foreground">
@@ -134,14 +189,16 @@ export function LessonPlayer({
         </p>
       )}
 
+      {lesson.description && (
+        <p className="whitespace-pre-wrap text-sm text-muted-foreground">{lesson.description}</p>
+      )}
+
       {content.kind !== "none" && (
-        <div className="flex items-center justify-between gap-3 pt-1">
+        <div className="flex flex-col gap-2 border-t pt-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-muted-foreground">
-            {content.kind === "youtube"
-              ? "La leçon est validée automatiquement à la fin de la vidéo."
-              : "Consultez le document puis validez la leçon."}
+            Consultez le contenu puis validez la leçon pour enregistrer votre progression.
           </p>
-          <Button size="sm" onClick={onComplete} disabled={completed || saving} className="gap-2">
+          <Button size="lg" onClick={onComplete} disabled={completed || saving} className="gap-2">
             {saving ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (

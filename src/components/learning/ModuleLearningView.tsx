@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronDown,
@@ -15,10 +15,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { LessonPlayer } from "@/components/learning/LessonPlayer";
-import { detectLessonContent, type LessonLike } from "@/lib/lesson-content";
+import { detectLessonContent, lessonTypeLabel, type LessonLike } from "@/lib/lesson-content";
 import { toast } from "sonner";
 
 type Lesson = LessonLike & { block_id: string; display_order: number };
@@ -32,6 +40,7 @@ function KindIcon({ lesson }: { lesson: Lesson }) {
   if (kind === "gdoc") return <FileType2 className="h-4 w-4 shrink-0 text-accent" />;
   return <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />;
 }
+
 
 export function ModuleLearningView({
   formationId,
@@ -126,18 +135,16 @@ export function ModuleLearningView({
     return idx <= unlockedIndex;
   };
 
-  // Reprise automatique là où l'étudiant s'était arrêté
-  useEffect(() => {
-    if (activeLesson || !flat.length || !progress) return;
-    const next = flat[Math.min(unlockedIndex, flat.length - 1)];
-    if (!next) return;
-    setActiveLesson(next.id);
-    const block = (tree ?? [])
-      .flatMap((f) => f.blocks)
-      .find((b) => b.lessons.some((l) => l.id === next.id));
-    if (block) setOpenBlocks((s) => ({ ...s, [block.id]: true }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flat.length, progress, unlockedIndex]);
+  const activeInfo = useMemo(() => {
+    if (!activeLesson) return null;
+    for (const f of tree ?? [])
+      for (const b of f.blocks) {
+        const lesson = b.lessons.find((l) => l.id === activeLesson);
+        if (lesson) return { lesson, blockTitle: b.title };
+      }
+    return null;
+  }, [activeLesson, tree]);
+
 
   const markStatus = async (lessonId: string, status: "in_progress" | "completed") => {
     if (!user) return;
@@ -240,12 +247,13 @@ export function ModuleLearningView({
                       {blockDone > 1 ? "s" : ""}
                     </span>
                   </span>
-                  <ChevronDown
-                    className={cn(
-                      "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
-                      isOpen && "rotate-180",
-                    )}
-                  />
+                  <span className="flex shrink-0 items-center gap-1 text-xs font-semibold text-primary">
+                    {isOpen ? "Fermer" : "Ouvrir"}
+                    <ChevronDown
+                      className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")}
+                    />
+                  </span>
+
                 </button>
 
                 {isOpen && (
@@ -256,43 +264,41 @@ export function ModuleLearningView({
                     {blockLessons.map((lesson) => {
                       const state = progress?.[lesson.id];
                       const locked = !isUnlocked(lesson.id);
-                      const isActive = activeLesson === lesson.id;
                       return (
-                        <div key={lesson.id} className="space-y-2">
-                          <button
-                            type="button"
-                            onClick={() => openLesson(lesson)}
-                            className={cn(
-                              "flex w-full items-center gap-3 rounded-xl border bg-card p-3 text-left transition-all",
-                              locked
-                                ? "cursor-not-allowed opacity-60"
-                                : "hover:border-primary/50 hover:shadow-sm",
-                              isActive && "border-primary shadow-elegant",
-                            )}
-                          >
+                        <div
+                          key={lesson.id}
+                          className={cn(
+                            "flex flex-col gap-3 rounded-xl border bg-card p-3 sm:flex-row sm:items-center",
+                            locked && "opacity-60",
+                          )}
+                        >
+                          <div className="flex min-w-0 flex-1 items-center gap-3">
                             {locked ? (
                               <Lock className="h-4 w-4 shrink-0 text-muted-foreground" />
                             ) : (
                               <KindIcon lesson={lesson} />
                             )}
-                            <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                              {lesson.title}
-                            </span>
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-medium">{lesson.title}</p>
+                              <p className="truncate text-xs text-muted-foreground">
+                                Type : {lessonTypeLabel(lesson)}
+                              </p>
+                            </div>
                             {state === "completed" ? (
                               <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
                             ) : state === "in_progress" && !locked ? (
                               <Hourglass className="h-4 w-4 shrink-0 text-gold" />
                             ) : null}
-                          </button>
-
-                          {isActive && !locked && (
-                            <LessonPlayer
-                              lesson={lesson}
-                              completed={state === "completed"}
-                              saving={saving === lesson.id}
-                              onComplete={() => void markStatus(lesson.id, "completed")}
-                            />
-                          )}
+                          </div>
+                          <Button
+                            size="sm"
+                            variant={locked ? "outline" : "default"}
+                            disabled={locked}
+                            onClick={() => openLesson(lesson)}
+                            className="w-full sm:w-auto"
+                          >
+                            {locked ? "Verrouillé" : "Ouvrir"}
+                          </Button>
                         </div>
                       );
                     })}
@@ -303,6 +309,31 @@ export function ModuleLearningView({
           })}
         </div>
       ))}
+
+      <Dialog open={!!activeInfo} onOpenChange={(o) => !o && setActiveLesson(null)}>
+        <DialogContent className="max-h-[92vh] w-[calc(100vw-1rem)] max-w-3xl overflow-y-auto p-4 sm:p-6">
+          {activeInfo && (
+            <>
+              <DialogHeader className="text-left">
+                <DialogDescription className="text-xs">
+                  {title ? `${title} · ` : ""}
+                  {activeInfo.blockTitle}
+                </DialogDescription>
+                <DialogTitle className="text-base sm:text-lg">
+                  {activeInfo.lesson.title}
+                </DialogTitle>
+              </DialogHeader>
+              <LessonPlayer
+                lesson={activeInfo.lesson}
+                completed={progress?.[activeInfo.lesson.id] === "completed"}
+                saving={saving === activeInfo.lesson.id}
+                onComplete={() => void markStatus(activeInfo.lesson.id, "completed")}
+              />
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
+
 }
