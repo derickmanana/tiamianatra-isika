@@ -263,43 +263,41 @@ export function ModuleLearningView({
                     {blockLessons.map((lesson) => {
                       const state = progress?.[lesson.id];
                       const locked = !isUnlocked(lesson.id);
-                      const isActive = activeLesson === lesson.id;
                       return (
-                        <div key={lesson.id} className="space-y-2">
-                          <button
-                            type="button"
-                            onClick={() => openLesson(lesson)}
-                            className={cn(
-                              "flex w-full items-center gap-3 rounded-xl border bg-card p-3 text-left transition-all",
-                              locked
-                                ? "cursor-not-allowed opacity-60"
-                                : "hover:border-primary/50 hover:shadow-sm",
-                              isActive && "border-primary shadow-elegant",
-                            )}
-                          >
+                        <div
+                          key={lesson.id}
+                          className={cn(
+                            "flex flex-col gap-3 rounded-xl border bg-card p-3 sm:flex-row sm:items-center",
+                            locked && "opacity-60",
+                          )}
+                        >
+                          <div className="flex min-w-0 flex-1 items-center gap-3">
                             {locked ? (
                               <Lock className="h-4 w-4 shrink-0 text-muted-foreground" />
                             ) : (
                               <KindIcon lesson={lesson} />
                             )}
-                            <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                              {lesson.title}
-                            </span>
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-medium">{lesson.title}</p>
+                              <p className="truncate text-xs text-muted-foreground">
+                                Type : {lessonTypeLabel(lesson)}
+                              </p>
+                            </div>
                             {state === "completed" ? (
                               <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
                             ) : state === "in_progress" && !locked ? (
                               <Hourglass className="h-4 w-4 shrink-0 text-gold" />
                             ) : null}
-                          </button>
-
-                          {isActive && !locked && (
-                            <LessonPlayer
-                              lesson={lesson}
-                              completed={state === "completed"}
-                              saving={saving === lesson.id}
-                              onComplete={() => void markStatus(lesson.id, "completed")}
-                            />
-                          )}
+                          </div>
+                          <Button
+                            size="sm"
+                            variant={locked ? "outline" : "default"}
+                            disabled={locked}
+                            onClick={() => openLesson(lesson)}
+                            className="w-full sm:w-auto"
+                          >
+                            {locked ? "Verrouillé" : "Ouvrir"}
+                          </Button>
                         </div>
                       );
                     })}
@@ -310,6 +308,31 @@ export function ModuleLearningView({
           })}
         </div>
       ))}
+
+      <Dialog open={!!activeInfo} onOpenChange={(o) => !o && setActiveLesson(null)}>
+        <DialogContent className="max-h-[92vh] w-[calc(100vw-1rem)] max-w-3xl overflow-y-auto p-4 sm:p-6">
+          {activeInfo && (
+            <>
+              <DialogHeader className="text-left">
+                <DialogDescription className="text-xs">
+                  {title ? `${title} · ` : ""}
+                  {activeInfo.blockTitle}
+                </DialogDescription>
+                <DialogTitle className="text-base sm:text-lg">
+                  {activeInfo.lesson.title}
+                </DialogTitle>
+              </DialogHeader>
+              <LessonPlayer
+                lesson={activeInfo.lesson}
+                completed={progress?.[activeInfo.lesson.id] === "completed"}
+                saving={saving === activeInfo.lesson.id}
+                onComplete={() => void markStatus(activeInfo.lesson.id, "completed")}
+              />
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
+
 }
