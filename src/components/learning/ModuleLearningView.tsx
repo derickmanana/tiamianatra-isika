@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronDown,
@@ -15,10 +15,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { LessonPlayer } from "@/components/learning/LessonPlayer";
-import { detectLessonContent, type LessonLike } from "@/lib/lesson-content";
+import { detectLessonContent, lessonTypeLabel, type LessonLike } from "@/lib/lesson-content";
 import { toast } from "sonner";
 
 type Lesson = LessonLike & { block_id: string; display_order: number };
@@ -32,6 +40,7 @@ function KindIcon({ lesson }: { lesson: Lesson }) {
   if (kind === "gdoc") return <FileType2 className="h-4 w-4 shrink-0 text-accent" />;
   return <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />;
 }
+
 
 export function ModuleLearningView({
   formationId,
