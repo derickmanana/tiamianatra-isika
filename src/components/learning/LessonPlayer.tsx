@@ -82,7 +82,7 @@ function Unavailable({ url, message }: { url?: string; message?: string }) {
   );
 }
 
-/** Renders storage files inline (blob URL) so the browser never auto-downloads. */
+/** PDF: opens in the phone's external viewer/Chrome. Other files render inline (blob URL). */
 function StorageLesson({ path, name, isPdf }: { path: string; name: string; isPdf: boolean }) {
   const [url, setUrl] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
@@ -93,14 +93,25 @@ function StorageLesson({ path, name, isPdf }: { path: string; name: string; isPd
     setUrl(null);
     setFailed(false);
     (async () => {
+      if (isPdf) {
+        const { data, error } = await supabase.storage
+          .from("lesson-files")
+          .createSignedUrl(path, 60 * 60);
+        if (cancelled) return;
+        if (error || !data?.signedUrl) {
+          setFailed(true);
+          return;
+        }
+        setUrl(data.signedUrl);
+        return;
+      }
       const { data, error } = await supabase.storage.from("lesson-files").download(path);
       if (cancelled) return;
       if (error || !data) {
         setFailed(true);
         return;
       }
-      const type = isPdf ? "application/pdf" : data.type || "application/octet-stream";
-      objectUrl = URL.createObjectURL(new Blob([data], { type }));
+      objectUrl = URL.createObjectURL(new Blob([data], { type: data.type || "application/octet-stream" }));
       setUrl(objectUrl);
     })();
     return () => {
@@ -119,23 +130,29 @@ function StorageLesson({ path, name, isPdf }: { path: string; name: string; isPd
       </div>
     );
 
+  if (isPdf)
+    return (
+      <div className="space-y-3 rounded-xl border bg-muted/30 p-4 text-sm">
+        <p className="text-muted-foreground">
+          Ce document PDF s'ouvre dans le lecteur PDF de votre téléphone ou dans Chrome.
+        </p>
+        <Button asChild size="lg" className="gap-2">
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            <ExternalLink className="h-4 w-4" /> Ouvrir le PDF
+          </a>
+        </Button>
+      </div>
+    );
+
   return (
-    <div className="space-y-2">
-      <iframe
-        src={url}
-        title={name}
-        className="h-[70vh] max-h-[70vh] w-full rounded-xl border bg-muted"
-      />
-      <a
-        href={url}
-        download={name}
-        className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-primary"
-      >
-        <ExternalLink className="h-3.5 w-3.5" /> Télécharger {name} (optionnel)
-      </a>
-    </div>
+    <iframe
+      src={url}
+      title={name}
+      className="h-[70vh] max-h-[70vh] w-full rounded-xl border bg-muted"
+    />
   );
 }
+
 
 export function LessonPlayer({
   lesson,
