@@ -135,18 +135,16 @@ export function ModuleLearningView({
     return idx <= unlockedIndex;
   };
 
-  // Reprise automatique là où l'étudiant s'était arrêté
-  useEffect(() => {
-    if (activeLesson || !flat.length || !progress) return;
-    const next = flat[Math.min(unlockedIndex, flat.length - 1)];
-    if (!next) return;
-    setActiveLesson(next.id);
-    const block = (tree ?? [])
-      .flatMap((f) => f.blocks)
-      .find((b) => b.lessons.some((l) => l.id === next.id));
-    if (block) setOpenBlocks((s) => ({ ...s, [block.id]: true }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flat.length, progress, unlockedIndex]);
+  const activeInfo = useMemo(() => {
+    if (!activeLesson) return null;
+    for (const f of tree ?? [])
+      for (const b of f.blocks) {
+        const lesson = b.lessons.find((l) => l.id === activeLesson);
+        if (lesson) return { lesson, blockTitle: b.title };
+      }
+    return null;
+  }, [activeLesson, tree]);
+
 
   const markStatus = async (lessonId: string, status: "in_progress" | "completed") => {
     if (!user) return;
