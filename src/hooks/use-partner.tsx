@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 export type Partner = {
   id: string;
   user_id: string;
-  partner_type: "formateur" | "recruteur";
+  partner_type: "formateur";
   display_name: string;
   company: string | null;
   bio: string | null;

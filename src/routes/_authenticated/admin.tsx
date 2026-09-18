@@ -49,7 +49,7 @@ function AdminPage() {
       {pendingPartnersCount > 0 && (
         <div className="mb-4 p-3 rounded-lg border border-primary/50 bg-primary/10 flex items-center justify-between gap-3 flex-wrap">
           <div className="text-sm">
-            <b>{pendingPartnersCount}</b> nouvelle{pendingPartnersCount > 1 ? "s" : ""} demande{pendingPartnersCount > 1 ? "s" : ""} d'inscription (Formateur / Recruteur) en attente de validation.
+            <b>{pendingPartnersCount}</b> nouvelle{pendingPartnersCount > 1 ? "s" : ""} demande{pendingPartnersCount > 1 ? "s" : ""} d'inscription (Formateur) en attente de validation.
           </div>
           <Badge>Onglet Partenaires</Badge>
         </div>
@@ -994,12 +994,7 @@ function PartnersAdminTab() {
     queryKey: ["admin-pending-formations"],
     queryFn: async () => (await supabase.from("formations").select("id, title, status, owner_partner_id").eq("status", "pending")).data ?? [],
   });
-  const { data: pendingJobs } = useQuery({
-    queryKey: ["admin-pending-jobs"],
-    queryFn: async () => (await supabase.from("job_offers").select("id, title, status, partner_id").eq("status", "pending")).data ?? [],
-  });
-
-  const setStatus = async (table: "partners" | "formations" | "job_offers", id: string, status: string) => {
+  const setStatus = async (table: "partners" | "formations", id: string, status: string) => {
     const { error } = await supabase.from(table).update({ status }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Mis à jour");
@@ -1008,7 +1003,6 @@ function PartnersAdminTab() {
 
   const all = partners ?? [];
   const pendingFormateurs = all.filter((p: any) => p.partner_type === "formateur" && p.status === "pending");
-  const pendingRecruteurs = all.filter((p: any) => p.partner_type === "recruteur" && p.status === "pending");
   const otherPartners = all.filter((p: any) => p.status !== "pending");
 
   const renderPartner = (p: any) => (
@@ -1016,9 +1010,7 @@ function PartnersAdminTab() {
       <div className="min-w-0">
         <div className="font-semibold flex items-center gap-2 flex-wrap">
           {p.display_name}
-          <Badge variant={p.partner_type === "formateur" ? "default" : "secondary"}>
-            {p.partner_type === "formateur" ? "Formateur" : "Recruteur"}
-          </Badge>
+          <Badge variant="default">Formateur</Badge>
           <Badge variant={p.status === "approved" ? "default" : p.status === "pending" ? "outline" : "destructive"}>
             {p.status}
           </Badge>
@@ -1042,7 +1034,7 @@ function PartnersAdminTab() {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3">
         <Card className="border-primary/40">
           <CardContent className="py-4 flex items-center justify-between">
             <div>
@@ -1054,18 +1046,8 @@ function PartnersAdminTab() {
             </Badge>
           </CardContent>
         </Card>
-        <Card className="border-primary/40">
-          <CardContent className="py-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs text-muted-foreground">Demandes Recruteur en attente</p>
-              <p className="text-3xl font-bold text-primary">{pendingRecruteurs.length}</p>
-            </div>
-            <Badge variant={pendingRecruteurs.length > 0 ? "default" : "outline"}>
-              {pendingRecruteurs.length > 0 ? "Action requise" : "À jour"}
-            </Badge>
-          </CardContent>
-        </Card>
       </div>
+
 
       <Card>
         <CardHeader>
@@ -1080,18 +1062,6 @@ function PartnersAdminTab() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            💼 Demandes Recruteurs
-            {pendingRecruteurs.length > 0 && <Badge>{pendingRecruteurs.length}</Badge>}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {pendingRecruteurs.map(renderPartner)}
-          {pendingRecruteurs.length === 0 && <p className="text-sm text-muted-foreground">Aucune demande Recruteur en attente.</p>}
-        </CardContent>
-      </Card>
 
       <Card>
         <CardHeader><CardTitle>Partenaires traités</CardTitle></CardHeader>
@@ -1118,21 +1088,6 @@ function PartnersAdminTab() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader><CardTitle>Offres d'emploi en attente</CardTitle></CardHeader>
-        <CardContent className="space-y-2">
-          {(pendingJobs ?? []).map((j: any) => (
-            <div key={j.id} className="p-3 border rounded flex items-center justify-between gap-2">
-              <div className="font-medium truncate">{j.title}</div>
-              <div className="flex gap-1">
-                <Button size="sm" variant="outline" onClick={() => setStatus("job_offers", j.id, "approved")}>Approuver</Button>
-                <Button size="sm" variant="outline" onClick={() => setStatus("job_offers", j.id, "rejected")}>Refuser</Button>
-              </div>
-            </div>
-          ))}
-          {(!pendingJobs || pendingJobs.length === 0) && <p className="text-sm text-muted-foreground">Aucune offre en attente.</p>}
-        </CardContent>
-      </Card>
     </div>
   );
 }

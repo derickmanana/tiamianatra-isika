@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import {
-  Home, GraduationCap, Layers, Wallet, Bell, MessageSquare, User, LogOut, Shield, Sparkles, Briefcase,
+  Home, GraduationCap, Layers, Wallet, Bell, MessageSquare, User, LogOut, Shield, Sparkles,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -78,13 +78,13 @@ export function ClientLayout({ children }: { children: ReactNode }) {
             {partner && partner.status === "approved" && (
               <Link to="/partenaire">
                 <Button variant="outline" size="sm" className="gap-1.5">
-                  <Briefcase className="h-4 w-4" /> <span className="hidden sm:inline">Partenaire</span>
+                  <GraduationCap className="h-4 w-4" /> <span className="hidden sm:inline">Formateur</span>
                 </Button>
               </Link>
             )}
             {!partner && (
               <Link to="/partenaire" className="hidden md:inline-flex">
-                <Button variant="ghost" size="sm">Devenir partenaire</Button>
+                <Button variant="ghost" size="sm">Devenir formateur</Button>
               </Link>
             )}
             {isAdmin && (

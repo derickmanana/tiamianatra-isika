@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-r
 import { ClientLayout } from "@/components/ClientLayout";
 import { usePartner } from "@/hooks/use-partner";
 import { PartnerOnboarding } from "@/components/partner/PartnerOnboarding";
-import { LayoutDashboard, GraduationCap, Briefcase, School, Layers, Clock, MessageSquare, BookOpen } from "lucide-react";
+import { LayoutDashboard, GraduationCap, School, MessageSquare, BookOpen } from "lucide-react";
 
 
 export const Route = createFileRoute("/_authenticated/partenaire")({
@@ -44,27 +44,19 @@ function PartnerLayout() {
     );
   }
 
-  const tabs = partner.partner_type === "formateur"
-    ? [
-        { to: "/partenaire", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
-        { to: "/partenaire/formations", label: "Mes formations", icon: GraduationCap, exact: false },
-        { to: "/partenaire/modules", label: "Mes modules", icon: BookOpen, exact: false },
-        { to: "/partenaire/ecoles", label: "Mon école", icon: School, exact: false },
-        { to: "/partenaire/messages", label: "Messages", icon: MessageSquare, exact: false },
-      ]
-    : [
-        { to: "/partenaire", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
-        { to: "/partenaire/offres", label: "Mes offres", icon: Briefcase, exact: false },
-        { to: "/partenaire/messages", label: "Messages", icon: MessageSquare, exact: false },
-      ];
+  const tabs = [
+    { to: "/partenaire", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
+    { to: "/partenaire/formations", label: "Mes formations", icon: GraduationCap, exact: false },
+    { to: "/partenaire/modules", label: "Mes modules", icon: BookOpen, exact: false },
+    { to: "/partenaire/ecoles", label: "Mon école", icon: School, exact: false },
+    { to: "/partenaire/messages", label: "Messages", icon: MessageSquare, exact: false },
+  ];
 
 
   return (
     <ClientLayout>
       <div className="mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold">
-          Espace {partner.partner_type === "formateur" ? "Formateur" : "Recruteur"}
-        </h1>
+        <h1 className="text-2xl md:text-3xl font-bold">Espace Formateur</h1>
         <p className="text-muted-foreground text-sm">{partner.display_name}</p>
       </div>
       <div className="flex gap-2 overflow-x-auto pb-2 mb-4 border-b">
