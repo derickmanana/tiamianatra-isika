@@ -25,7 +25,6 @@ import { Route as AuthenticatedPartenaireIndexRouteImport } from './routes/_auth
 import { Route as AuthenticatedFormationsIndexRouteImport } from './routes/_authenticated/formations.index'
 import { Route as AuthenticatedCategoriesIndexRouteImport } from './routes/_authenticated/categories.index'
 import { Route as AuthenticatedPartenaireTracksRouteImport } from './routes/_authenticated/partenaire.tracks'
-import { Route as AuthenticatedPartenaireOffresRouteImport } from './routes/_authenticated/partenaire.offres'
 import { Route as AuthenticatedPartenaireModulesRouteImport } from './routes/_authenticated/partenaire.modules'
 import { Route as AuthenticatedPartenaireMessagesRouteImport } from './routes/_authenticated/partenaire.messages'
 import { Route as AuthenticatedPartenaireFormationsRouteImport } from './routes/_authenticated/partenaire.formations'
@@ -121,12 +120,6 @@ const AuthenticatedPartenaireTracksRoute =
     path: '/tracks',
     getParentRoute: () => AuthenticatedPartenaireRoute,
   } as any)
-const AuthenticatedPartenaireOffresRoute =
-  AuthenticatedPartenaireOffresRouteImport.update({
-    id: '/offres',
-    path: '/offres',
-    getParentRoute: () => AuthenticatedPartenaireRoute,
-  } as any)
 const AuthenticatedPartenaireModulesRoute =
   AuthenticatedPartenaireModulesRouteImport.update({
     id: '/modules',
@@ -201,7 +194,6 @@ export interface FileRoutesByFullPath {
   '/partenaire/formations': typeof AuthenticatedPartenaireFormationsRoute
   '/partenaire/messages': typeof AuthenticatedPartenaireMessagesRoute
   '/partenaire/modules': typeof AuthenticatedPartenaireModulesRoute
-  '/partenaire/offres': typeof AuthenticatedPartenaireOffresRoute
   '/partenaire/tracks': typeof AuthenticatedPartenaireTracksRoute
   '/categories/': typeof AuthenticatedCategoriesIndexRoute
   '/formations/': typeof AuthenticatedFormationsIndexRoute
@@ -227,7 +219,6 @@ export interface FileRoutesByTo {
   '/partenaire/formations': typeof AuthenticatedPartenaireFormationsRoute
   '/partenaire/messages': typeof AuthenticatedPartenaireMessagesRoute
   '/partenaire/modules': typeof AuthenticatedPartenaireModulesRoute
-  '/partenaire/offres': typeof AuthenticatedPartenaireOffresRoute
   '/partenaire/tracks': typeof AuthenticatedPartenaireTracksRoute
   '/categories': typeof AuthenticatedCategoriesIndexRoute
   '/formations': typeof AuthenticatedFormationsIndexRoute
@@ -256,7 +247,6 @@ export interface FileRoutesById {
   '/_authenticated/partenaire/formations': typeof AuthenticatedPartenaireFormationsRoute
   '/_authenticated/partenaire/messages': typeof AuthenticatedPartenaireMessagesRoute
   '/_authenticated/partenaire/modules': typeof AuthenticatedPartenaireModulesRoute
-  '/_authenticated/partenaire/offres': typeof AuthenticatedPartenaireOffresRoute
   '/_authenticated/partenaire/tracks': typeof AuthenticatedPartenaireTracksRoute
   '/_authenticated/categories/': typeof AuthenticatedCategoriesIndexRoute
   '/_authenticated/formations/': typeof AuthenticatedFormationsIndexRoute
@@ -285,7 +275,6 @@ export interface FileRouteTypes {
     | '/partenaire/formations'
     | '/partenaire/messages'
     | '/partenaire/modules'
-    | '/partenaire/offres'
     | '/partenaire/tracks'
     | '/categories/'
     | '/formations/'
@@ -311,7 +300,6 @@ export interface FileRouteTypes {
     | '/partenaire/formations'
     | '/partenaire/messages'
     | '/partenaire/modules'
-    | '/partenaire/offres'
     | '/partenaire/tracks'
     | '/categories'
     | '/formations'
@@ -339,7 +327,6 @@ export interface FileRouteTypes {
     | '/_authenticated/partenaire/formations'
     | '/_authenticated/partenaire/messages'
     | '/_authenticated/partenaire/modules'
-    | '/_authenticated/partenaire/offres'
     | '/_authenticated/partenaire/tracks'
     | '/_authenticated/categories/'
     | '/_authenticated/formations/'
@@ -467,13 +454,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPartenaireTracksRouteImport
       parentRoute: typeof AuthenticatedPartenaireRoute
     }
-    '/_authenticated/partenaire/offres': {
-      id: '/_authenticated/partenaire/offres'
-      path: '/offres'
-      fullPath: '/partenaire/offres'
-      preLoaderRoute: typeof AuthenticatedPartenaireOffresRouteImport
-      parentRoute: typeof AuthenticatedPartenaireRoute
-    }
     '/_authenticated/partenaire/modules': {
       id: '/_authenticated/partenaire/modules'
       path: '/modules'
@@ -546,7 +526,6 @@ interface AuthenticatedPartenaireRouteChildren {
   AuthenticatedPartenaireFormationsRoute: typeof AuthenticatedPartenaireFormationsRoute
   AuthenticatedPartenaireMessagesRoute: typeof AuthenticatedPartenaireMessagesRoute
   AuthenticatedPartenaireModulesRoute: typeof AuthenticatedPartenaireModulesRoute
-  AuthenticatedPartenaireOffresRoute: typeof AuthenticatedPartenaireOffresRoute
   AuthenticatedPartenaireTracksRoute: typeof AuthenticatedPartenaireTracksRoute
   AuthenticatedPartenaireIndexRoute: typeof AuthenticatedPartenaireIndexRoute
 }
@@ -559,7 +538,6 @@ const AuthenticatedPartenaireRouteChildren: AuthenticatedPartenaireRouteChildren
       AuthenticatedPartenaireFormationsRoute,
     AuthenticatedPartenaireMessagesRoute: AuthenticatedPartenaireMessagesRoute,
     AuthenticatedPartenaireModulesRoute: AuthenticatedPartenaireModulesRoute,
-    AuthenticatedPartenaireOffresRoute: AuthenticatedPartenaireOffresRoute,
     AuthenticatedPartenaireTracksRoute: AuthenticatedPartenaireTracksRoute,
     AuthenticatedPartenaireIndexRoute: AuthenticatedPartenaireIndexRoute,
   }

@@ -11,14 +11,14 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { toast } from "sonner";
 import { PWAInstallButton } from "@/components/PWAInstallButton";
-import { GraduationCap, Briefcase, User } from "lucide-react";
+import { GraduationCap, User } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "M'BossTsika — Connexion" }] }),
   component: AuthPage,
 });
 
-type SignupRole = "etudiant" | "formateur" | "recruteur";
+type SignupRole = "etudiant" | "formateur";
 
 function AuthPage() {
   const { t } = useTranslation();
@@ -99,8 +99,8 @@ function AuthPage() {
       return toast.error(error.message);
     }
 
-    // Si Formateur / Recruteur → créer une demande de partenariat (en attente)
-    if (role !== "etudiant" && data.user) {
+    // Si Formateur → créer son espace partenaire
+    if (role === "formateur" && data.user) {
       const { error: pErr } = await supabase.from("partners").insert({
         user_id: data.user.id,
         partner_type: role,
@@ -123,8 +123,8 @@ function AuthPage() {
   const roleOptions: { value: SignupRole; label: string; desc: string; Icon: typeof User }[] = [
     { value: "etudiant", label: "Étudiant", desc: "Suivre des formations", Icon: User },
     { value: "formateur", label: "Formateur", desc: "Publier des formations", Icon: GraduationCap },
-    { value: "recruteur", label: "Recruteur", desc: "Publier des offres d'emploi", Icon: Briefcase },
   ];
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
