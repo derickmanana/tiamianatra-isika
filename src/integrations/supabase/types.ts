@@ -914,7 +914,7 @@ export type Database = {
           display_name: string
           id?: string
           logo_url?: string | null
-          partner_type: string
+          partner_type?: string
           phone?: string | null
           status?: string
           updated_at?: string
