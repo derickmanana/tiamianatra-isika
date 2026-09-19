@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { generateCertificatePdf } from "@/lib/certificate";
+import { StudentCvSection } from "@/components/student/StudentCvSection";
 
 export const Route = createFileRoute("/_authenticated/profil")({ component: Profile });
 
@@ -233,6 +234,8 @@ function Profile() {
           )}
         </CardContent>
       </Card>
+
+      <StudentCvSection profile={profile as any} />
     </ClientLayout>
   );
 }

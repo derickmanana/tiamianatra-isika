@@ -1058,11 +1058,15 @@ export type Database = {
           affiliate_bonus_percent: number
           avatar_url: string | null
           created_at: string
+          cv_bio: string | null
+          cv_document_url: string | null
           email: string
           free_modules_credit: number
           full_name: string | null
+          headline: string | null
           id: string
           is_blocked: boolean
+          location: string | null
           phone: string | null
           updated_at: string
         }
@@ -1070,11 +1074,15 @@ export type Database = {
           affiliate_bonus_percent?: number
           avatar_url?: string | null
           created_at?: string
+          cv_bio?: string | null
+          cv_document_url?: string | null
           email: string
           free_modules_credit?: number
           full_name?: string | null
+          headline?: string | null
           id: string
           is_blocked?: boolean
+          location?: string | null
           phone?: string | null
           updated_at?: string
         }
@@ -1082,11 +1090,15 @@ export type Database = {
           affiliate_bonus_percent?: number
           avatar_url?: string | null
           created_at?: string
+          cv_bio?: string | null
+          cv_document_url?: string | null
           email?: string
           free_modules_credit?: number
           full_name?: string | null
+          headline?: string | null
           id?: string
           is_blocked?: boolean
+          location?: string | null
           phone?: string | null
           updated_at?: string
         }
@@ -1178,6 +1190,117 @@ export type Database = {
           key?: string
           updated_at?: string
           value?: string
+        }
+        Relationships: []
+      }
+      student_education: {
+        Row: {
+          created_at: string
+          degree: string | null
+          description: string | null
+          display_order: number
+          end_date: string | null
+          field: string | null
+          id: string
+          school: string
+          start_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          degree?: string | null
+          description?: string | null
+          display_order?: number
+          end_date?: string | null
+          field?: string | null
+          id?: string
+          school: string
+          start_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          degree?: string | null
+          description?: string | null
+          display_order?: number
+          end_date?: string | null
+          field?: string | null
+          id?: string
+          school?: string
+          start_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      student_experiences: {
+        Row: {
+          company: string | null
+          created_at: string
+          description: string | null
+          display_order: number
+          end_date: string | null
+          id: string
+          is_current: boolean
+          location: string | null
+          start_date: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          end_date?: string | null
+          id?: string
+          is_current?: boolean
+          location?: string | null
+          start_date?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          end_date?: string | null
+          id?: string
+          is_current?: boolean
+          location?: string | null
+          start_date?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      student_skills: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          level: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          level?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          level?: number
+          user_id?: string
         }
         Relationships: []
       }
