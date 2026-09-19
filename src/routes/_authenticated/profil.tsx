@@ -234,6 +234,8 @@ function Profile() {
           )}
         </CardContent>
       </Card>
+
+      <StudentCvSection profile={profile as any} />
     </ClientLayout>
   );
 }
