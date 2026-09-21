@@ -245,6 +245,39 @@ export type Database = {
           },
         ]
       }
+      cookie_consents: {
+        Row: {
+          analytics: boolean
+          created_at: string
+          decided_at: string
+          id: string
+          necessary: boolean
+          policy_version: string
+          preferences: boolean
+          user_id: string
+        }
+        Insert: {
+          analytics?: boolean
+          created_at?: string
+          decided_at?: string
+          id?: string
+          necessary?: boolean
+          policy_version?: string
+          preferences?: boolean
+          user_id: string
+        }
+        Update: {
+          analytics?: boolean
+          created_at?: string
+          decided_at?: string
+          id?: string
+          necessary?: boolean
+          policy_version?: string
+          preferences?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       course_blocks: {
         Row: {
           created_at: string
@@ -736,6 +769,75 @@ export type Database = {
           label?: string
           price_multiplier?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      legal_acceptances: {
+        Row: {
+          accepted_at: string
+          document_slug: string
+          document_version: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          document_slug: string
+          document_version: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          document_slug?: string
+          document_version?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      legal_documents: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string | null
+          display_order: number
+          id: string
+          is_published: boolean
+          last_updated: string
+          slug: string
+          summary: string | null
+          title: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by?: string | null
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          last_updated?: string
+          slug: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          last_updated?: string
+          slug?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          version?: string
         }
         Relationships: []
       }

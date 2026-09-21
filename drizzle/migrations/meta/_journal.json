@@ -22,6 +22,13 @@
       "when": 1789797963825,
       "tag": "0002_student_cv_storage_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789970174954,
+      "tag": "0003_legal_documents_and_consents",
+      "breakpoints": true
     }
   ]
 }
