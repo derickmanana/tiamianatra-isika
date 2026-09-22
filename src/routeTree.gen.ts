@@ -21,6 +21,8 @@ import { Route as AuthenticatedPaiementsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedPartenaireRouteImport } from './routes/_authenticated/partenaire'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthCallbackRouteImport } from './routes/auth_.callback'
+import { Route as LegalIndexRouteImport } from './routes/legal.index'
+import { Route as LegalSlugRouteImport } from './routes/legal.$slug'
 import { Route as AuthenticatedCategoriesIndexRouteImport } from './routes/_authenticated/categories.index'
 import { Route as AuthenticatedCategoriesSlugRouteImport } from './routes/_authenticated/categories.$slug'
 import { Route as AuthenticatedEcolesIdRouteImport } from './routes/_authenticated/ecoles.$id'
@@ -94,6 +96,16 @@ const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth_/callback',
   path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalIndexRoute = LegalIndexRouteImport.update({
+  id: '/legal/',
+  path: '/legal/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalSlugRoute = LegalSlugRouteImport.update({
+  id: '/legal/$slug',
+  path: '/legal/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedCategoriesIndexRoute =
@@ -185,6 +197,8 @@ export interface FileRoutesByFullPath {
   '/partenaire': typeof AuthenticatedPartenaireRouteWithChildren
   '/profil': typeof AuthenticatedProfilRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/legal/$slug': typeof LegalSlugRoute
+  '/legal/': typeof LegalIndexRoute
   '/categories/$slug': typeof AuthenticatedCategoriesSlugRoute
   '/ecoles/$id': typeof AuthenticatedEcolesIdRoute
   '/formations/$id': typeof AuthenticatedFormationsIdRoute
@@ -210,6 +224,8 @@ export interface FileRoutesByTo {
   '/paiements': typeof AuthenticatedPaiementsRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/legal/$slug': typeof LegalSlugRoute
+  '/legal': typeof LegalIndexRoute
   '/categories/$slug': typeof AuthenticatedCategoriesSlugRoute
   '/ecoles/$id': typeof AuthenticatedEcolesIdRoute
   '/formations/$id': typeof AuthenticatedFormationsIdRoute
@@ -238,6 +254,8 @@ export interface FileRoutesById {
   '/_authenticated/partenaire': typeof AuthenticatedPartenaireRouteWithChildren
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/auth_/callback': typeof AuthCallbackRoute
+  '/legal/$slug': typeof LegalSlugRoute
+  '/legal/': typeof LegalIndexRoute
   '/_authenticated/categories/$slug': typeof AuthenticatedCategoriesSlugRoute
   '/_authenticated/ecoles/$id': typeof AuthenticatedEcolesIdRoute
   '/_authenticated/formations/$id': typeof AuthenticatedFormationsIdRoute
@@ -266,6 +284,8 @@ export interface FileRouteTypes {
     | '/partenaire'
     | '/profil'
     | '/auth/callback'
+    | '/legal/$slug'
+    | '/legal/'
     | '/categories/$slug'
     | '/ecoles/$id'
     | '/formations/$id'
@@ -291,6 +311,8 @@ export interface FileRouteTypes {
     | '/paiements'
     | '/profil'
     | '/auth/callback'
+    | '/legal/$slug'
+    | '/legal'
     | '/categories/$slug'
     | '/ecoles/$id'
     | '/formations/$id'
@@ -318,6 +340,8 @@ export interface FileRouteTypes {
     | '/_authenticated/partenaire'
     | '/_authenticated/profil'
     | '/auth_/callback'
+    | '/legal/$slug'
+    | '/legal/'
     | '/_authenticated/categories/$slug'
     | '/_authenticated/ecoles/$id'
     | '/_authenticated/formations/$id'
@@ -338,6 +362,8 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  LegalSlugRoute: typeof LegalSlugRoute
+  LegalIndexRoute: typeof LegalIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -424,6 +450,20 @@ declare module '@tanstack/react-router' {
       path: '/auth/callback'
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/': {
+      id: '/legal/'
+      path: '/legal'
+      fullPath: '/legal/'
+      preLoaderRoute: typeof LegalIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/$slug': {
+      id: '/legal/$slug'
+      path: '/legal/$slug'
+      fullPath: '/legal/$slug'
+      preLoaderRoute: typeof LegalSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/categories/': {
@@ -589,6 +629,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  LegalSlugRoute: LegalSlugRoute,
+  LegalIndexRoute: LegalIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
