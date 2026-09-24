@@ -11,6 +11,7 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { LegalFooter } from "@/components/LegalFooter";
 
 export function ClientLayout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
@@ -115,6 +116,8 @@ export function ClientLayout({ children }: { children: ReactNode }) {
       )}
 
       <main className="flex-1 container mx-auto px-4 py-6 pb-24 lg:pb-6">{children}</main>
+
+      <LegalFooter />
 
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t bg-background shadow-elegant">
         <div className="grid grid-cols-5">

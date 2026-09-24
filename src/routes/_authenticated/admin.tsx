@@ -20,6 +20,7 @@ import { CoverUploader } from "@/components/CoverUploader";
 import { syncPlaylist, saveYoutubeApiKey, getYoutubeApiKeyMasked } from "@/lib/playlist.functions";
 import { CourseStructureTab } from "@/components/admin/CourseStructureTab";
 import { AccessCodesTab } from "@/components/admin/AccessCodesTab";
+import { LegalDocsTab } from "@/components/admin/LegalDocsTab";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({ component: AdminPage });
@@ -72,6 +73,7 @@ function AdminPage() {
           <TabsTrigger value="settings">{t("admin.payment_settings")}</TabsTrigger>
           <TabsTrigger value="api">Paramètres API</TabsTrigger>
           <TabsTrigger value="email">Paramètres Email</TabsTrigger>
+          <TabsTrigger value="legal">Documents juridiques</TabsTrigger>
           <TabsTrigger value="partners">
             Partenaires
             {pendingPartnersCount > 0 && (
@@ -98,6 +100,7 @@ function AdminPage() {
         <TabsContent value="settings"><SettingsTab /></TabsContent>
         <TabsContent value="api"><ApiSettingsTab /></TabsContent>
         <TabsContent value="email"><EmailSettingsTab /></TabsContent>
+        <TabsContent value="legal"><LegalDocsTab /></TabsContent>
         <TabsContent value="partners"><PartnersAdminTab /></TabsContent>
       </Tabs>
     </ClientLayout>

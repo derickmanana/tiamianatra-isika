@@ -6,6 +6,7 @@ import "@/lib/i18n";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/sonner";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -69,6 +70,7 @@ function RootComponent() {
         <AuthProvider>
           <AuthLinkRescue />
           <Outlet />
+          <CookieConsentBanner />
           <Toaster richColors position="top-right" />
         </AuthProvider>
       </ThemeProvider>
