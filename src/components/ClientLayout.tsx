@@ -1,4 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Home, GraduationCap, Layers, Wallet, Bell, MessageSquare, User, LogOut, Shield, Sparkles,
@@ -12,6 +13,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { LegalFooter } from "@/components/LegalFooter";
+import { takePendingAcceptances, clearPendingAcceptances } from "@/lib/legal";
 
 export function ClientLayout({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
@@ -19,6 +21,20 @@ export function ClientLayout({ children }: { children: ReactNode }) {
   const { partner } = usePartner();
   const emailUnconfirmed = !!user && !user.email_confirmed_at;
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  // Enregistre les acceptations faites à l'inscription dès qu'une session existe
+  useEffect(() => {
+    if (!user) return;
+    const pending = takePendingAcceptances();
+    if (!pending.length) return;
+    (async () => {
+      const { error } = await supabase.from("legal_acceptances").upsert(
+        pending.map((p) => ({ user_id: user.id, document_slug: p.slug, document_version: p.version })),
+        { onConflict: "user_id,document_slug,document_version", ignoreDuplicates: true },
+      );
+      if (!error) clearPendingAcceptances();
+    })();
+  }, [user]);
 
   const resendConfirmation = async () => {
     if (!user?.email) return;

@@ -72,3 +72,31 @@ export function writeCookiePrefs(prefs: Omit<CookiePrefs, "necessary">) {
   window.dispatchEvent(new Event("mbt-cookie-consent"));
   return payload;
 }
+
+/** Acceptations en attente d'enregistrement (inscription sans session immédiate). */
+export const PENDING_ACCEPTANCE_KEY = "mbt_pending_legal_acceptance";
+
+export type PendingAcceptance = { slug: string; version: string }[];
+
+export function setPendingAcceptances(items: PendingAcceptance) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(PENDING_ACCEPTANCE_KEY, JSON.stringify(items));
+}
+
+export function takePendingAcceptances(): PendingAcceptance {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(PENDING_ACCEPTANCE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((i) => i && typeof i.slug === "string" && typeof i.version === "string");
+  } catch {
+    return [];
+  }
+}
+
+export function clearPendingAcceptances() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(PENDING_ACCEPTANCE_KEY);
+}
