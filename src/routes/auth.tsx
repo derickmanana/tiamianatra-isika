@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +12,9 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { toast } from "sonner";
 import { PWAInstallButton } from "@/components/PWAInstallButton";
 import { GraduationCap, User } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { usePublishedLegalDocs } from "@/lib/legal-queries";
+import { setPendingAcceptances } from "@/lib/legal";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "M'BossTsika — Connexion" }] }),
@@ -29,6 +32,10 @@ function AuthPage() {
   const [role, setRole] = useState<SignupRole>("etudiant");
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const { data: legalDocs } = usePublishedLegalDocs();
+  const cguVersion = legalDocs?.find((d) => d.slug === "cgu")?.version ?? "1.0";
+  const privacyVersion = legalDocs?.find((d) => d.slug === "confidentialite")?.version ?? "1.0";
 
   const resendVerification = async () => {
     if (!email || resending) return;
@@ -88,11 +95,24 @@ function AuthPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!acceptTerms) {
+      return toast.error("Vous devez accepter les Conditions d'utilisation pour créer un compte.");
+    }
     setLoading(true);
+    const acceptedAt = new Date().toISOString();
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback`, data: { full_name: fullName, signup_role: role } },
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        data: {
+          full_name: fullName,
+          signup_role: role,
+          terms_accepted_at: acceptedAt,
+          terms_version: cguVersion,
+          privacy_version: privacyVersion,
+        },
+      },
     });
     if (error) {
       setLoading(false);
@@ -108,6 +128,20 @@ function AuthPage() {
         status: "approved",
       });
       if (pErr) console.warn("Partner insert error:", pErr.message);
+    }
+
+    const acceptances = [
+      { slug: "cgu", version: cguVersion },
+      { slug: "confidentialite", version: privacyVersion },
+    ];
+    if (data.session && data.user) {
+      const { error: aErr } = await supabase.from("legal_acceptances").upsert(
+        acceptances.map((a) => ({ user_id: data.user!.id, document_slug: a.slug, document_version: a.version })),
+        { onConflict: "user_id,document_slug,document_version", ignoreDuplicates: true },
+      );
+      if (aErr) setPendingAcceptances(acceptances);
+    } else {
+      setPendingAcceptances(acceptances);
     }
 
     setLoading(false);
@@ -191,7 +225,26 @@ function AuthPage() {
                   <div><Label>{t("auth.full_name")}</Label><Input required value={fullName} onChange={(e) => setFullName(e.target.value)} /></div>
                   <div><Label>{t("common.email")}</Label><Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></div>
                   <div><Label>{t("common.password")}</Label><Input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} /></div>
-                  <Button type="submit" className="w-full bg-gradient-primary" disabled={loading}>
+                  <div className="flex items-start gap-2 rounded-lg border bg-muted/30 p-3">
+                    <Checkbox
+                      id="accept-terms"
+                      checked={acceptTerms}
+                      onCheckedChange={(v) => setAcceptTerms(v === true)}
+                      className="mt-0.5"
+                    />
+                    <Label htmlFor="accept-terms" className="text-xs font-normal leading-relaxed cursor-pointer">
+                      J'ai lu et j'accepte les{" "}
+                      <Link to="/legal/$slug" params={{ slug: "cgu" }} className="underline text-primary">
+                        Conditions d'utilisation
+                      </Link>{" "}
+                      et j'ai pris connaissance de la{" "}
+                      <Link to="/legal/$slug" params={{ slug: "confidentialite" }} className="underline text-primary">
+                        Politique de confidentialité
+                      </Link>
+                      .
+                    </Label>
+                  </div>
+                  <Button type="submit" className="w-full bg-gradient-primary" disabled={loading || !acceptTerms}>
                     {loading ? "…" : t("auth.signup_button")}
                   </Button>
                   {role !== "etudiant" && (
@@ -204,6 +257,13 @@ function AuthPage() {
             </Tabs>
           </CardContent>
         </Card>
+        <div className="mt-4 flex flex-wrap justify-center gap-x-3 gap-y-1 text-[11px] text-white/80">
+          <Link to="/legal/$slug" params={{ slug: "cgu" }} className="hover:underline">Conditions d'utilisation</Link>
+          <span>·</span>
+          <Link to="/legal/$slug" params={{ slug: "confidentialite" }} className="hover:underline">Politique de confidentialité</Link>
+          <span>·</span>
+          <Link to="/legal" className="hover:underline">Documents juridiques</Link>
+        </div>
       </div>
     </div>
   );

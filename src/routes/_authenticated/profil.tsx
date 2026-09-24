@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { generateCertificatePdf } from "@/lib/certificate";
 import { StudentCvSection } from "@/components/student/StudentCvSection";
+import { LegalPrivacySection } from "@/components/legal/LegalPrivacySection";
 
 export const Route = createFileRoute("/_authenticated/profil")({ component: Profile });
 
@@ -236,6 +237,8 @@ function Profile() {
       </Card>
 
       <StudentCvSection profile={profile as any} />
+
+      <LegalPrivacySection />
     </ClientLayout>
   );
 }
