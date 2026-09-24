@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { HeroSlider } from "@/components/HeroSlider";
 import { FormationCard } from "@/components/FormationCard";
 import { FORMATION_CATEGORIES } from "@/lib/formation-categories";
+import { LegalFooter } from "@/components/LegalFooter";
 
 
 export const Route = createFileRoute("/")({
@@ -100,6 +101,9 @@ function HomePage() {
               <Link to="/auth"><Button size="lg" variant="outline" className="bg-white/10 text-white border-white/30 hover:bg-white/20">{t("nav.signup")}</Button></Link>
             </div>
           </div>
+        </div>
+        <div className="relative z-10 bg-background/95">
+          <LegalFooter />
         </div>
       </div>
     );
